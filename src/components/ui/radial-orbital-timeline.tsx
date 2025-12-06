@@ -189,54 +189,68 @@ export default function RadialOrbitalTimeline({
                                     {item.title}
                                 </div>
 
-                                {isExpanded && (
-                                    <Card
-                                        className={`
-                                            ${isMobile
-                                                ? 'fixed bottom-6 left-4 right-4 w-auto translate-x-0 top-auto'
-                                                : 'absolute top-20 left-1/2 -translate-x-1/2 w-72'
-                                            }
-                                            bg-neutral-900/95 backdrop-blur-md border-white/10 shadow-2xl shadow-black/50 overflow-hidden z-[999]
-                                            animate-in fade-in zoom-in-95 duration-200
-                                        `}
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        {!isMobile && <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>}
-                                        <CardHeader className="pb-2 pt-4">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-xs font-mono text-amber-500 tracking-widest uppercase">
-                                                    Classic Coffee
-                                                </span>
-                                            </div>
-                                            <CardTitle className="text-xl mt-1 font-bold text-white tracking-tight">
-                                                {item.title}
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="text-sm text-neutral-300 pb-4">
-                                            <div className="mb-4 leading-relaxed">{item.content}</div>
-
-                                            <div className="pt-3 border-t border-white/5">
-                                                <div className="flex justify-between items-center text-xs mb-2">
-                                                    <span className="flex items-center text-neutral-400">
-                                                        <Zap size={12} className="mr-1.5" />
-                                                        Caffeine Intensity
-                                                    </span>
-                                                    <span className="font-mono text-white">{item.energy}%</span>
-                                                </div>
-                                                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-gradient-to-r from-amber-700 to-amber-500"
-                                                        style={{ width: `${item.energy}%` }}
-                                                    ></div>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                )}
                             </div>
                         );
                     })}
                 </div>
+
+                {/* Render Active Card Overlay/Sheet outside of transformed container */}
+                {Object.keys(expandedItems).map((key) => {
+                    if (!expandedItems[parseInt(key)]) return null;
+                    const activeItem = timelineData.find(item => item.id === parseInt(key));
+                    if (!activeItem) return null;
+
+                    return (
+                        <Card
+                            key={activeItem.id}
+                            className={`
+                                ${isMobile
+                                    ? 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md'
+                                    : 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72'
+                                }
+                                bg-neutral-900/95 backdrop-blur-md border-white/10 shadow-2xl shadow-black/50 overflow-hidden z-[999]
+                                animate-in fade-in zoom-in-95 duration-200
+                            `}
+                            style={!isMobile ? {
+                                top: `calc(50% + 140px)`,
+                                left: `50%`,
+                                transform: 'translateX(-50%)'
+                            } : {}}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {!isMobile && <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>}
+                            <CardHeader className="pb-2 pt-4">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs font-mono text-amber-500 tracking-widest uppercase">
+                                        Classic Coffee
+                                    </span>
+                                </div>
+                                <CardTitle className="text-xl mt-1 font-bold text-white tracking-tight">
+                                    {activeItem.title}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-sm text-neutral-300 pb-4">
+                                <div className="mb-4 leading-relaxed">{activeItem.content}</div>
+
+                                <div className="pt-3 border-t border-white/5">
+                                    <div className="flex justify-between items-center text-xs mb-2">
+                                        <span className="flex items-center text-neutral-400">
+                                            <Zap size={12} className="mr-1.5" />
+                                            Caffeine Intensity
+                                        </span>
+                                        <span className="font-mono text-white">{activeItem.energy}%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-amber-700 to-amber-500"
+                                            style={{ width: `${activeItem.energy}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
         </div>
     );
