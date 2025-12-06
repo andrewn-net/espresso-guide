@@ -167,7 +167,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative w-full h-screen bg-black">
+    <div className="relative w-full h-[100dvh] bg-black">
       <RadialOrbitalTimeline timelineData={timelineData} />
     </div>
   );

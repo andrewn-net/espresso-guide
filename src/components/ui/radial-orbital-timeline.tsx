@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Zap, Coffee } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +29,7 @@ export default function RadialOrbitalTimeline({
     /* eslint-disable @typescript-eslint/no-unused-vars */
     const [viewMode, _setViewMode] = useState<"orbital">("orbital");
     const [rotationAngle, setRotationAngle] = useState<number>(0);
+    const [isMobile, setIsMobile] = useState<boolean>(false);
 
     const [centerOffset, _setCenterOffset] = useState<{ x: number; y: number }>({
         x: 0,
@@ -39,10 +40,30 @@ export default function RadialOrbitalTimeline({
     const orbitRef = useRef<HTMLDivElement>(null);
     const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === containerRef.current || e.target === orbitRef.current) {
             setExpandedItems({});
         }
+    };
+
+    const centerViewOnNode = (nodeId: number) => {
+        if (viewMode !== "orbital" || !nodeRefs.current[nodeId]) return;
+
+        const nodeIndex = timelineData.findIndex((item) => item.id === nodeId);
+        const totalNodes = timelineData.length;
+        const targetAngle = (nodeIndex / totalNodes) * 360;
+
+        setRotationAngle(270 - targetAngle);
     };
 
     const toggleItem = (id: number) => {
@@ -64,19 +85,9 @@ export default function RadialOrbitalTimeline({
         });
     };
 
-    const centerViewOnNode = (nodeId: number) => {
-        if (viewMode !== "orbital" || !nodeRefs.current[nodeId]) return;
-
-        const nodeIndex = timelineData.findIndex((item) => item.id === nodeId);
-        const totalNodes = timelineData.length;
-        const targetAngle = (nodeIndex / totalNodes) * 360;
-
-        setRotationAngle(270 - targetAngle);
-    };
-
     const calculateNodePosition = (index: number, total: number) => {
         const angle = ((index / total) * 360 + rotationAngle) % 360;
-        const radius = 200;
+        const radius = isMobile ? 130 : 250;
         const radian = (angle * Math.PI) / 180;
 
         const x = radius * Math.cos(radian) + centerOffset.x;
@@ -91,13 +102,9 @@ export default function RadialOrbitalTimeline({
         return { x, y, angle, zIndex, opacity };
     };
 
-
-
-
-
     return (
         <div
-            className="w-full h-screen flex flex-col items-center justify-center bg-black overflow-hidden"
+            className="w-full h-[100dvh] flex flex-col items-center justify-center bg-black overflow-hidden"
             ref={containerRef}
             onClick={handleContainerClick}
         >
@@ -111,16 +118,13 @@ export default function RadialOrbitalTimeline({
                     }}
                 >
                     {/* Center Coffee Anchor - Flat/Minimal */}
-                    <div className="absolute w-24 h-24 rounded-full bg-stone-900 flex items-center justify-center z-10 border border-white/10 shadow-2xl">
-                        <Coffee className="text-white/90" size={32} strokeWidth={1.5} />
+                    <div className={`absolute rounded-full bg-stone-900 flex items-center justify-center z-10 border border-white/10 shadow-2xl transition-all duration-500 ${isMobile ? 'w-20 h-20' : 'w-28 h-28'}`}>
+                        <Coffee className="text-white/90" size={isMobile ? 24 : 36} strokeWidth={1.5} />
                     </div>
-
-
 
                     {timelineData.map((item, index) => {
                         const position = calculateNodePosition(index, timelineData.length);
                         const isExpanded = expandedItems[item.id];
-
 
                         const Icon = item.icon;
 
@@ -154,7 +158,7 @@ export default function RadialOrbitalTimeline({
 
                                 <div
                                     className={`
-                  w-10 h-10 rounded-full flex items-center justify-center
+                  rounded-full flex items-center justify-center
                   ${isExpanded
                                             ? "bg-white text-black"
                                             : "bg-black text-white"
@@ -165,56 +169,67 @@ export default function RadialOrbitalTimeline({
                                             : "border-white/40"
                                         }
                   transition-all duration-300 transform
-                  ${isExpanded ? "scale-150" : ""}
+                  ${isMobile ? 'w-10 h-10' : 'w-12 h-12'}
+                  ${isExpanded ? "scale-125" : ""}
                 `}
                                 >
-                                    <Icon size={16} />
+                                    <Icon size={isMobile ? 16 : 20} />
                                 </div>
 
                                 <div
                                     className={`
-                  absolute top-12  whitespace-nowrap
+                  absolute whitespace-nowrap
                   text-xs font-semibold tracking-wider
                   transition-all duration-300
-                  ${isExpanded ? "text-white scale-125" : "text-white/70"}
+                  ${isMobile ? 'top-11' : 'top-14'}
+                  left-1/2 -translate-x-1/2
+                  ${isExpanded ? "text-white scale-110" : "text-white/70"}
                 `}
                                 >
                                     {item.title}
                                 </div>
 
                                 {isExpanded && (
-                                    <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-64 bg-black/90 backdrop-blur-lg border-white/30 shadow-xl shadow-white/10 overflow-visible z-[999]">
-                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>
-                                        <CardHeader className="pb-2">
+                                    <Card
+                                        className={`
+                                            ${isMobile
+                                                ? 'fixed bottom-6 left-4 right-4 w-auto translate-x-0 top-auto'
+                                                : 'absolute top-20 left-1/2 -translate-x-1/2 w-72'
+                                            }
+                                            bg-neutral-900/95 backdrop-blur-md border-white/10 shadow-2xl shadow-black/50 overflow-hidden z-[999]
+                                            animate-in fade-in zoom-in-95 duration-200
+                                        `}
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        {!isMobile && <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>}
+                                        <CardHeader className="pb-2 pt-4">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-xs font-mono text-white/50">
-                                                    {item.date}
+                                                <span className="text-xs font-mono text-amber-500 tracking-widest uppercase">
+                                                    Classic Coffee
                                                 </span>
                                             </div>
-                                            <CardTitle className="text-sm mt-2 font-bold text-white">
+                                            <CardTitle className="text-xl mt-1 font-bold text-white tracking-tight">
                                                 {item.title}
                                             </CardTitle>
                                         </CardHeader>
-                                        <CardContent className="text-xs text-white/80">
-                                            <div className="mt-2">{item.content}</div>
+                                        <CardContent className="text-sm text-neutral-300 pb-4">
+                                            <div className="mb-4 leading-relaxed">{item.content}</div>
 
-                                            <div className="mt-4 pt-3 border-t border-white/10">
-                                                <div className="flex justify-between items-center text-xs mb-1">
-                                                    <span className="flex items-center text-white/70">
-                                                        <Zap size={10} className="mr-1" />
-                                                        Intensity
+                                            <div className="pt-3 border-t border-white/5">
+                                                <div className="flex justify-between items-center text-xs mb-2">
+                                                    <span className="flex items-center text-neutral-400">
+                                                        <Zap size={12} className="mr-1.5" />
+                                                        Caffeine Intensity
                                                     </span>
-                                                    <span className="font-mono">{item.energy}%</span>
+                                                    <span className="font-mono text-white">{item.energy}%</span>
                                                 </div>
-                                                <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                                                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                                                     <div
-                                                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                                                        className="h-full bg-gradient-to-r from-amber-700 to-amber-500"
                                                         style={{ width: `${item.energy}%` }}
                                                     ></div>
                                                 </div>
                                             </div>
-
-
                                         </CardContent>
                                     </Card>
                                 )}
