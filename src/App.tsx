@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import RadialOrbitalTimeline, { type TimelineItem } from "@/components/ui/radial-orbital-timeline";
-import { Coffee, Droplets, Wind, Zap } from "lucide-react";
-// import { useStore } from "@/store/useStore"; // Removed as we map static presets now
+import { Coffee, Droplets, Wind, Zap, Sun, Moon } from "lucide-react";
+import { useStore } from "@/store/useStore";
 
 // Extended Drink Definitions for the Radial Menu
 const DRINKS = [
@@ -93,7 +93,7 @@ const DRINKS = [
   },
   {
     id: 7,
-    title: "Short Macchiato",
+    title: "Short Mac",
     description: "Espresso 'stained' with a dash of warm milk and foam.",
     recipe: { dose: "18g", yield: "36g", milk: "Dash" },
     steps: [
@@ -103,11 +103,12 @@ const DRINKS = [
     ],
     icon: Droplets,
     energy: 90,
-    relatedIds: [1]
+    relatedIds: [1],
+    fullTitle: "Short Macchiato"
   },
   {
     id: 8,
-    title: "Long Macchiato",
+    title: "Long Mac",
     description: "A bold long black 'stained' with a dash of milk and foam.",
     recipe: { dose: "18g", yield: "36g", water: "80ml", milk: "Dash" },
     steps: [
@@ -117,6 +118,7 @@ const DRINKS = [
     ],
     icon: Droplets,
     energy: 85,
+    fullTitle: "Long Macchiato"
   },
   {
     id: 9,
@@ -134,24 +136,34 @@ const DRINKS = [
 ];
 
 export default function App() {
+  const { theme, toggleTheme } = useStore();
   const [timelineData, setTimelineData] = useState<TimelineItem[]>([]);
+
+  // Apply theme class to document root
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
+  }, [theme]);
 
   useEffect(() => {
     // Map static DRINKS to TimelineItem format with Rich Content
     const nodes: TimelineItem[] = DRINKS.map(drink => ({
       id: drink.id,
       title: drink.title,
+      // @ts-ignore
+      fullTitle: drink.fullTitle,
       date: "Recipe",
       // Rich Content Render
       content: (
         <div className="space-y-3">
-          <p className="italic text-white/90">{drink.description}</p>
-          <div className="bg-white/10 p-2 rounded text-[10px] font-mono grid grid-cols-2 gap-2">
+          <p className="italic text-muted-foreground">{drink.description}</p>
+          <div className="bg-secondary/50 p-2 rounded text-[10px] font-mono grid grid-cols-2 gap-2 text-foreground">
             {Object.entries(drink.recipe).map(([k, v]) => (
               <div key={k}><span className="opacity-50 uppercase mr-1">{k}:</span>{v}</div>
             ))}
           </div>
-          <ul className="list-disc list-inside space-y-1 text-white/80">
+          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
             {drink.steps.map((step, i) => <li key={i}>{step}</li>)}
           </ul>
         </div>
@@ -164,10 +176,18 @@ export default function App() {
     }));
 
     setTimelineData(nodes);
-  }, []);
+  }, [theme]); // Re-render content when theme changes to ensure utility classes update? actually CSS handle it
 
   return (
-    <div className="relative w-full h-[100dvh] bg-black">
+    <div className="relative w-full h-[100dvh] bg-background transition-colors duration-500">
+      <div className="absolute top-4 right-4 z-50">
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full bg-secondary/80 text-foreground backdrop-blur-sm hover:bg-secondary transition-all"
+        >
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+      </div>
       <RadialOrbitalTimeline timelineData={timelineData} />
     </div>
   );

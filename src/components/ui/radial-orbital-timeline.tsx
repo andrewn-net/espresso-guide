@@ -14,6 +14,7 @@ export interface TimelineItem {
 
 
     energy: number;
+    fullTitle?: string;
 }
 
 interface RadialOrbitalTimelineProps {
@@ -94,17 +95,14 @@ export default function RadialOrbitalTimeline({
         const y = radius * Math.sin(radian) + centerOffset.y;
 
         const zIndex = Math.round(100 + 50 * Math.cos(radian));
-        const opacity = Math.max(
-            0.4,
-            Math.min(1, 0.4 + 0.6 * ((1 + Math.sin(radian)) / 2))
-        );
+        const opacity = 1;
 
         return { x, y, angle, zIndex, opacity };
     };
 
     return (
         <div
-            className="w-full h-[100dvh] flex flex-col items-center justify-center bg-black overflow-hidden"
+            className="w-full h-[100dvh] flex flex-col items-center justify-center bg-background overflow-hidden transition-colors duration-500"
             ref={containerRef}
             onClick={handleContainerClick}
         >
@@ -118,8 +116,8 @@ export default function RadialOrbitalTimeline({
                     }}
                 >
                     {/* Center Coffee Anchor - Flat/Minimal */}
-                    <div className={`absolute rounded-full bg-stone-900 flex items-center justify-center z-10 border border-white/10 shadow-2xl transition-all duration-500 ${isMobile ? 'w-20 h-20' : 'w-28 h-28'}`}>
-                        <Coffee className="text-white/90" size={isMobile ? 24 : 36} strokeWidth={1.5} />
+                    <div className={`absolute rounded-full bg-secondary flex items-center justify-center z-10 border border-border shadow-2xl transition-all duration-500 ${isMobile ? 'w-20 h-20' : 'w-28 h-28'}`}>
+                        <Coffee className="text-foreground/90" size={isMobile ? 24 : 36} strokeWidth={1.5} />
                     </div>
 
                     {timelineData.map((item, index) => {
@@ -131,7 +129,7 @@ export default function RadialOrbitalTimeline({
                         const nodeStyle = {
                             transform: `translate(${position.x}px, ${position.y}px)`,
                             zIndex: isExpanded ? 200 : position.zIndex,
-                            opacity: isExpanded ? 1 : position.opacity,
+                            opacity: 1,
                         };
 
                         return (
@@ -148,7 +146,7 @@ export default function RadialOrbitalTimeline({
                                 <div
                                     className={`absolute rounded-full -inset-1`}
                                     style={{
-                                        background: `radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)`,
+                                        background: `radial-gradient(circle, rgba(125,125,125,0.2) 0%, rgba(0,0,0,0) 70%)`,
                                         width: `${item.energy * 0.5 + 40}px`,
                                         height: `${item.energy * 0.5 + 40}px`,
                                         left: `-${(item.energy * 0.5 + 40 - 40) / 2}px`,
@@ -160,13 +158,13 @@ export default function RadialOrbitalTimeline({
                                     className={`
                   rounded-full flex items-center justify-center
                   ${isExpanded
-                                            ? "bg-white text-black"
-                                            : "bg-black text-white"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "bg-card text-card-foreground"
                                         }
                   border-2 
                   ${isExpanded
-                                            ? "border-white shadow-lg shadow-white/30"
-                                            : "border-white/40"
+                                            ? "border-primary shadow-lg shadow-primary/30"
+                                            : "border-border"
                                         }
                   transition-all duration-300 transform
                   ${isMobile ? 'w-10 h-10' : 'w-12 h-12'}
@@ -183,7 +181,7 @@ export default function RadialOrbitalTimeline({
                   transition-all duration-300
                   ${isMobile ? 'top-11' : 'top-14'}
                   left-1/2 -translate-x-1/2
-                  ${isExpanded ? "text-white scale-110" : "text-white/70"}
+                  ${isExpanded ? "text-foreground scale-110" : "text-muted-foreground"}
                 `}
                                 >
                                     {item.title}
@@ -208,7 +206,7 @@ export default function RadialOrbitalTimeline({
                                     ? 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md'
                                     : 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72'
                                 }
-                                bg-neutral-900/95 backdrop-blur-md border-white/10 shadow-2xl shadow-black/50 overflow-hidden z-[999]
+                                bg-card/95 backdrop-blur-md border-border shadow-2xl shadow-black/20 overflow-hidden z-[999]
                                 animate-in fade-in zoom-in-95 duration-200
                             `}
                             style={!isMobile ? {
@@ -218,29 +216,29 @@ export default function RadialOrbitalTimeline({
                             } : {}}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {!isMobile && <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>}
+                            {!isMobile && <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-border"></div>}
                             <CardHeader className="pb-2 pt-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-mono text-amber-500 tracking-widest uppercase">
                                         Classic Coffee
                                     </span>
                                 </div>
-                                <CardTitle className="text-xl mt-1 font-bold text-white tracking-tight">
-                                    {activeItem.title}
+                                <CardTitle className="text-xl mt-1 font-bold text-foreground tracking-tight">
+                                    {activeItem.fullTitle || activeItem.title}
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="text-sm text-neutral-300 pb-4">
+                            <CardContent className="text-sm text-muted-foreground pb-4">
                                 <div className="mb-4 leading-relaxed">{activeItem.content}</div>
 
-                                <div className="pt-3 border-t border-white/5">
+                                <div className="pt-3 border-t border-border">
                                     <div className="flex justify-between items-center text-xs mb-2">
-                                        <span className="flex items-center text-neutral-400">
+                                        <span className="flex items-center text-muted-foreground">
                                             <Zap size={12} className="mr-1.5" />
                                             Caffeine Intensity
                                         </span>
-                                        <span className="font-mono text-white">{activeItem.energy}%</span>
+                                        <span className="font-mono text-foreground">{activeItem.energy}%</span>
                                     </div>
-                                    <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                    <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-gradient-to-r from-amber-700 to-amber-500"
                                             style={{ width: `${activeItem.energy}%` }}

@@ -23,6 +23,10 @@ interface StoreState {
     // Preset Management
     loadPreset: (presetName: string) => void;
     resetToEspresso: () => void;
+
+    // Theme
+    theme: 'dark' | 'light';
+    toggleTheme: () => void;
 }
 
 const PRESETS: Record<string, Recipe> = {
@@ -44,7 +48,7 @@ const PRESETS: Record<string, Recipe> = {
     },
     'Macchiato': {
         id: 'p-macchiato',
-        name: 'Macchiato',
+        name: 'Short Mac',
         baseDrink: 'espresso',
         espressoParams: { dose: 18, yield: 36, time: 30, ratio: 2, temp: 93 },
         components: [
@@ -110,9 +114,22 @@ const createInitialRecipe = (): Recipe => {
     return { ...PRESETS['Espresso'], id: generateId() };
 };
 
+// Helper for initial theme
+const getInitialTheme = (): 'dark' | 'light' => {
+    if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('theme-preference');
+        if (saved === 'dark' || saved === 'light') return saved;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'dark';
+};
+
 export const useStore = create<StoreState>((set, get) => ({
     currentRecipe: createInitialRecipe(),
     isPrecisionMode: false,
+
+    // Theme initialization
+    theme: getInitialTheme(),
 
     setBaseDrink: (base) => {
         const { currentRecipe } = get();
@@ -203,5 +220,20 @@ export const useStore = create<StoreState>((set, get) => ({
 
     resetToEspresso: () => {
         set({ currentRecipe: { ...PRESETS['Espresso'], id: generateId() } });
+    },
+
+    toggleTheme: () => {
+        const { theme } = get();
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+
+        // Update DOM
+        const root = window.document.documentElement;
+        root.classList.remove('light', 'dark');
+        root.classList.add(newTheme);
+
+        // Persist
+        localStorage.setItem('theme-preference', newTheme);
+
+        set({ theme: newTheme });
     }
 }));
