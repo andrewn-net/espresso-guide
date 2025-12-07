@@ -18,6 +18,7 @@ const DRINKS = [
     icon: Zap,
     energy: 100,
     status: "completed",
+    image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=600&q=80"
   },
   {
     id: 2,
@@ -32,7 +33,8 @@ const DRINKS = [
     icon: Droplets,
     energy: 80,
     status: "in-progress",
-    relatedIds: [1]
+    relatedIds: [1],
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtKHawubzIfHTxITkicpfnryijcFD07TK-8Q&s"
   },
   {
     id: 3,
@@ -47,7 +49,8 @@ const DRINKS = [
     icon: Wind,
     energy: 60,
     status: "pending",
-    relatedIds: [1, 4]
+    relatedIds: [1, 4],
+    image: "https://images.unsplash.com/photo-1577968897966-3d4325b36b61?auto=format&fit=crop&w=600&q=80"
   },
   {
     id: 4,
@@ -62,6 +65,7 @@ const DRINKS = [
     icon: Coffee,
     energy: 40,
     status: "pending",
+    image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80"
   },
   {
     id: 5,
@@ -76,6 +80,7 @@ const DRINKS = [
     icon: Wind,
     energy: 50,
     status: "pending",
+    image: "https://www.cuisinart.ca/dw/image/v2/ABAF_PRD/on/demandware.static/-/Sites-ca-cuisinart-sfra-Library/default/dwc7862ee0/images/recipe-Images/cappuccino1-recipe.jpg?sw=1200&sh=1200&sm=fit"
   },
   {
     id: 6,
@@ -89,7 +94,8 @@ const DRINKS = [
     ],
     icon: Coffee,
     energy: 70,
-    relatedIds: [1, 4]
+    relatedIds: [1, 4],
+    image: "https://whitehorsecoffee.com.au/cdn/shop/articles/9B605647-F527-4816-A532-8449B8DB39FF.jpg?v=1680243604"
   },
   {
     id: 7,
@@ -104,7 +110,8 @@ const DRINKS = [
     icon: Droplets,
     energy: 90,
     relatedIds: [1],
-    fullTitle: "Short Macchiato"
+    fullTitle: "Short Macchiato",
+    image: "https://www.breville.com/content/dam/breville-brands/coffeehub/language-masters/en_au/recipes/recipe-hero-stills/Recipes_Banner6_1200x1200_Macchiato.jpeg"
   },
   {
     id: 8,
@@ -118,7 +125,8 @@ const DRINKS = [
     ],
     icon: Droplets,
     energy: 85,
-    fullTitle: "Long Macchiato"
+    fullTitle: "Long Macchiato",
+    image: "https://methodicalcoffee.com/cdn/shop/articles/macchiato.jpg?v=1693311327&width=1200"
   },
   {
     id: 9,
@@ -132,6 +140,7 @@ const DRINKS = [
     ],
     icon: Coffee,
     energy: 75,
+    image: "https://images.unsplash.com/photo-1514066558159-fc8c737ef259?auto=format&fit=crop&w=600&q=80"
   }
 ];
 
@@ -170,8 +179,7 @@ export default function App() {
       ),
       category: "Menu",
       icon: drink.icon,
-
-
+      image: drink.image,
       energy: drink.energy
     }));
 

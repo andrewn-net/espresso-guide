@@ -11,6 +11,7 @@ export interface TimelineItem {
     content: React.ReactNode;
     category: string;
     icon: React.ElementType;
+    image?: string;
 
 
     energy: number;
@@ -216,7 +217,6 @@ export default function RadialOrbitalTimeline({
                             } : {}}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {!isMobile && <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-border"></div>}
                             <CardHeader className="pb-2 pt-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-mono text-amber-500 tracking-widest uppercase">
@@ -227,6 +227,21 @@ export default function RadialOrbitalTimeline({
                                     {activeItem.fullTitle || activeItem.title}
                                 </CardTitle>
                             </CardHeader>
+
+                            {/* Card Image - Start (Moved Lower) */}
+                            {activeItem.image && (
+                                <div className="px-6 py-2">
+                                    <div className="relative w-full h-48 rounded-md overflow-hidden shadow-inner border border-border/50 group">
+                                        <img
+                                            src={activeItem.image}
+                                            alt={activeItem.title}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            {/* Card Image - End */}
+
                             <CardContent className="text-sm text-muted-foreground pb-4">
                                 <div className="mb-4 leading-relaxed">{activeItem.content}</div>
 
