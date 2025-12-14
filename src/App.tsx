@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import RadialOrbitalTimeline, { type TimelineItem } from "@/components/ui/radial-orbital-timeline";
-import { Coffee, Droplets, Wind, Zap, Sun, Moon } from "lucide-react";
+import DialInMode from "@/components/DialInMode";
+import { Coffee, Droplets, Wind, Zap, Sun, Moon, Settings2 } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
 // Extended Drink Definitions for the Radial Menu
@@ -147,6 +148,7 @@ const DRINKS = [
 export default function App() {
   const { theme, toggleTheme } = useStore();
   const [timelineData, setTimelineData] = useState<TimelineItem[]>([]);
+  const [mode, setMode] = useState<'recipe' | 'dialin'>('recipe');
 
   // Apply theme class to document root
   useEffect(() => {
@@ -188,6 +190,7 @@ export default function App() {
 
   return (
     <div className="relative w-full h-[100dvh] bg-background transition-colors duration-500">
+      {/* Theme Toggle - Keep in top right */}
       <div className="absolute top-4 right-4 z-50">
         <button
           onClick={toggleTheme}
@@ -196,7 +199,39 @@ export default function App() {
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
       </div>
-      <RadialOrbitalTimeline timelineData={timelineData} />
+
+      {/* Main Content */}
+      {mode === 'recipe' ? (
+        <RadialOrbitalTimeline timelineData={timelineData} />
+      ) : (
+        <DialInMode />
+      )}
+
+      {/* Floating Bottom Tab Navigation */}
+      <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4">
+        <div className="bg-secondary/90 backdrop-blur-xl rounded-full border border-border/50 shadow-2xl p-1.5 flex gap-1">
+          <button
+            onClick={() => setMode('recipe')}
+            className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all ${mode === 'recipe'
+                ? 'bg-primary text-primary-foreground shadow-lg'
+                : 'text-foreground hover:bg-secondary/50'
+              }`}
+          >
+            <Coffee size={20} />
+            <span>Recipes</span>
+          </button>
+          <button
+            onClick={() => setMode('dialin')}
+            className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all ${mode === 'dialin'
+                ? 'bg-primary text-primary-foreground shadow-lg'
+                : 'text-foreground hover:bg-secondary/50'
+              }`}
+          >
+            <Settings2 size={20} />
+            <span>Dial-In</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -47,3 +47,28 @@ export interface DrinkTemplate {
     base: DrinkBase;
     defaultComponents: Omit<DrinkComponent, 'id'>[];
 }
+
+// Dial-In Mode Types
+export interface DialInInput {
+    dose: number;      // grams
+    yield: number;     // grams  
+    time: number;      // seconds
+    grindSetting: number; // 1-10 scale (1=coarse, 10=fine)
+}
+
+export interface DialInRecommendation {
+    diagnosis: 'perfect' | 'under-extracted' | 'over-extracted' | 'ratio-off';
+    severityLevel: 'good' | 'minor' | 'major';
+    grindAdjustment: {
+        direction: 'finer' | 'coarser' | 'no-change';
+        amount: number; // 1-3 (clicks/notches)
+        message: string;
+    };
+    doseAdjustment?: {
+        direction: 'increase' | 'decrease';
+        amount: number; // grams
+        message: string;
+    };
+    explanation: string;
+    tasteProfile: string;
+}
