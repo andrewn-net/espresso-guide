@@ -224,13 +224,13 @@ export default function DialInMode() {
                     <div className="flex gap-2">
                         <button
                             onClick={handleAnalyze}
-                            className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl text-sm"
+                            className="flex-1 px-4 py-2.5 bg-emerald-400 text-white rounded-lg font-semibold hover:bg-emerald-500 transition-all shadow-lg hover:shadow-xl text-sm"
                         >
                             Analyze Shot
                         </button>
                         <button
                             onClick={handleReset}
-                            className="px-4 py-2.5 bg-secondary text-foreground rounded-lg font-semibold hover:bg-secondary/80 transition-all text-sm"
+                            className="px-4 py-2.5 bg-rose-400 text-white rounded-lg font-semibold hover:bg-rose-500 transition-all text-sm"
                         >
                             Reset
                         </button>
