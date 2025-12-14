@@ -189,7 +189,7 @@ export default function DialInMode() {
                         </div>
                         <div className="flex items-center gap-2">
                             <button
-                                onClick={() => setInput({ ...input, grindSetting: Math.max(1, input.grindSetting - 0.5) })}
+                                onClick={() => setInput({ ...input, grindSetting: Math.max(1, input.grindSetting - 0.1) })}
                                 className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
                             >
                                 −
@@ -204,7 +204,7 @@ export default function DialInMode() {
                                 className="flex-1 h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
                             />
                             <button
-                                onClick={() => setInput({ ...input, grindSetting: Math.min(10, input.grindSetting + 0.5) })}
+                                onClick={() => setInput({ ...input, grindSetting: Math.min(10, input.grindSetting + 0.1) })}
                                 className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
                             >
                                 +
