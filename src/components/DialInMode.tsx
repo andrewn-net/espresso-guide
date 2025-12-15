@@ -98,7 +98,7 @@ export default function DialInMode() {
                                 onChange={(e) => setInput({ ...input, dose: parseFloat(e.target.value) })}
                                 className="flex-1 h-3 bg-gradient-to-b from-secondary/60 to-secondary rounded-full appearance-none cursor-pointer accent-primary shadow-inner"
                                 style={{
-                                    background: `linear-gradient(to right, rgb(148 163 184) 0%, rgb(148 163 184) ${((input.dose - 10) / (25 - 10)) * 100}%, hsl(var(--secondary)) ${((input.dose - 10) / (25 - 10)) * 100}%, hsl(var(--secondary)) 100%)`,
+                                    background: `linear-gradient(to right, rgba(70, 70, 70, 0.85) 0%, rgba(210, 210, 210, 0.6) ${((input.dose - 10) / (25 - 10)) * 100}%, hsl(var(--secondary)) ${((input.dose - 10) / (25 - 10)) * 100}%, hsl(var(--secondary)) 100%)`,
                                 }}
                             />
                             <button
@@ -136,7 +136,7 @@ export default function DialInMode() {
                                 onChange={(e) => setInput({ ...input, yield: parseFloat(e.target.value) })}
                                 className="flex-1 h-3 bg-gradient-to-b from-secondary/60 to-secondary rounded-full appearance-none cursor-pointer accent-primary shadow-inner"
                                 style={{
-                                    background: `linear-gradient(to right, rgb(148 163 184) 0%, rgb(148 163 184) ${((input.yield - 20) / (60 - 20)) * 100}%, hsl(var(--secondary)) ${((input.yield - 20) / (60 - 20)) * 100}%, hsl(var(--secondary)) 100%)`,
+                                    background: `linear-gradient(to right, rgba(70, 70, 70, 0.85) 0%, rgba(210, 210, 210, 0.6) ${((input.yield - 20) / (60 - 20)) * 100}%, hsl(var(--secondary)) ${((input.yield - 20) / (60 - 20)) * 100}%, hsl(var(--secondary)) 100%)`,
                                 }}
                             />
                             <button
@@ -174,7 +174,7 @@ export default function DialInMode() {
                                 onChange={(e) => setInput({ ...input, time: parseInt(e.target.value) })}
                                 className="flex-1 h-3 bg-gradient-to-b from-secondary/60 to-secondary rounded-full appearance-none cursor-pointer accent-primary shadow-inner"
                                 style={{
-                                    background: `linear-gradient(to right, rgb(148 163 184) 0%, rgb(148 163 184) ${((input.time - 15) / (40 - 15)) * 100}%, hsl(var(--secondary)) ${((input.time - 15) / (40 - 15)) * 100}%, hsl(var(--secondary)) 100%)`,
+                                    background: `linear-gradient(to right, rgba(70, 70, 70, 0.85) 0%, rgba(210, 210, 210, 0.6) ${((input.time - 15) / (40 - 15)) * 100}%, hsl(var(--secondary)) ${((input.time - 15) / (40 - 15)) * 100}%, hsl(var(--secondary)) 100%)`,
                                 }}
                             />
                             <button
@@ -212,7 +212,7 @@ export default function DialInMode() {
                                 onChange={(e) => setInput({ ...input, grindSetting: parseFloat(e.target.value) })}
                                 className="flex-1 h-3 bg-gradient-to-b from-secondary/60 to-secondary rounded-full appearance-none cursor-pointer accent-primary shadow-inner"
                                 style={{
-                                    background: `linear-gradient(to right, rgb(148 163 184) 0%, rgb(148 163 184) ${((input.grindSetting - 1) / (10 - 1)) * 100}%, hsl(var(--secondary)) ${((input.grindSetting - 1) / (10 - 1)) * 100}%, hsl(var(--secondary)) 100%)`,
+                                    background: `linear-gradient(to right, rgba(70, 70, 70, 0.85) 0%, rgba(210, 210, 210, 0.6) ${((input.grindSetting - 1) / (10 - 1)) * 100}%, hsl(var(--secondary)) ${((input.grindSetting - 1) / (10 - 1)) * 100}%, hsl(var(--secondary)) 100%)`,
                                 }}
                             />
                             <button
