@@ -85,7 +85,7 @@ export default function DialInMode() {
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setInput({ ...input, dose: Math.max(10, input.dose - 0.5) })}
-                                className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
+                                className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl shadow-md hover:shadow-lg"
                             >
                                 −
                             </button>
@@ -96,11 +96,14 @@ export default function DialInMode() {
                                 step="0.1"
                                 value={input.dose}
                                 onChange={(e) => setInput({ ...input, dose: parseFloat(e.target.value) })}
-                                className="flex-1 h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                                className="flex-1 h-3 bg-gradient-to-b from-secondary/60 to-secondary rounded-full appearance-none cursor-pointer accent-primary shadow-inner"
+                                style={{
+                                    background: `linear-gradient(to right, rgb(148 163 184) 0%, rgb(148 163 184) ${((input.dose - 10) / (25 - 10)) * 100}%, hsl(var(--secondary)) ${((input.dose - 10) / (25 - 10)) * 100}%, hsl(var(--secondary)) 100%)`,
+                                }}
                             />
                             <button
                                 onClick={() => setInput({ ...input, dose: Math.min(25, input.dose + 0.5) })}
-                                className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
+                                className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl shadow-md hover:shadow-lg"
                             >
                                 +
                             </button>
@@ -120,7 +123,7 @@ export default function DialInMode() {
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setInput({ ...input, yield: Math.max(20, input.yield - 1) })}
-                                className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
+                                className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl shadow-md hover:shadow-lg"
                             >
                                 −
                             </button>
@@ -131,11 +134,14 @@ export default function DialInMode() {
                                 step="0.1"
                                 value={input.yield}
                                 onChange={(e) => setInput({ ...input, yield: parseFloat(e.target.value) })}
-                                className="flex-1 h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                                className="flex-1 h-3 bg-gradient-to-b from-secondary/60 to-secondary rounded-full appearance-none cursor-pointer accent-primary shadow-inner"
+                                style={{
+                                    background: `linear-gradient(to right, rgb(148 163 184) 0%, rgb(148 163 184) ${((input.yield - 20) / (60 - 20)) * 100}%, hsl(var(--secondary)) ${((input.yield - 20) / (60 - 20)) * 100}%, hsl(var(--secondary)) 100%)`,
+                                }}
                             />
                             <button
                                 onClick={() => setInput({ ...input, yield: Math.min(60, input.yield + 1) })}
-                                className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
+                                className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl shadow-md hover:shadow-lg"
                             >
                                 +
                             </button>
@@ -155,7 +161,7 @@ export default function DialInMode() {
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setInput({ ...input, time: Math.max(15, input.time - 1) })}
-                                className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
+                                className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl shadow-md hover:shadow-lg"
                             >
                                 −
                             </button>
@@ -166,11 +172,14 @@ export default function DialInMode() {
                                 step="1"
                                 value={input.time}
                                 onChange={(e) => setInput({ ...input, time: parseInt(e.target.value) })}
-                                className="flex-1 h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                                className="flex-1 h-3 bg-gradient-to-b from-secondary/60 to-secondary rounded-full appearance-none cursor-pointer accent-primary shadow-inner"
+                                style={{
+                                    background: `linear-gradient(to right, rgb(148 163 184) 0%, rgb(148 163 184) ${((input.time - 15) / (40 - 15)) * 100}%, hsl(var(--secondary)) ${((input.time - 15) / (40 - 15)) * 100}%, hsl(var(--secondary)) 100%)`,
+                                }}
                             />
                             <button
                                 onClick={() => setInput({ ...input, time: Math.min(40, input.time + 1) })}
-                                className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
+                                className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl shadow-md hover:shadow-lg"
                             >
                                 +
                             </button>
@@ -190,7 +199,7 @@ export default function DialInMode() {
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setInput({ ...input, grindSetting: Math.max(1, input.grindSetting - 0.1) })}
-                                className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
+                                className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl shadow-md hover:shadow-lg"
                             >
                                 −
                             </button>
@@ -201,11 +210,14 @@ export default function DialInMode() {
                                 step="0.1"
                                 value={input.grindSetting}
                                 onChange={(e) => setInput({ ...input, grindSetting: parseFloat(e.target.value) })}
-                                className="flex-1 h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                                className="flex-1 h-3 bg-gradient-to-b from-secondary/60 to-secondary rounded-full appearance-none cursor-pointer accent-primary shadow-inner"
+                                style={{
+                                    background: `linear-gradient(to right, rgb(148 163 184) 0%, rgb(148 163 184) ${((input.grindSetting - 1) / (10 - 1)) * 100}%, hsl(var(--secondary)) ${((input.grindSetting - 1) / (10 - 1)) * 100}%, hsl(var(--secondary)) 100%)`,
+                                }}
                             />
                             <button
                                 onClick={() => setInput({ ...input, grindSetting: Math.min(10, input.grindSetting + 0.1) })}
-                                className="flex-shrink-0 w-11 h-11 rounded-full bg-secondary hover:bg-secondary/80 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl"
+                                className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 active:scale-95 transition-all flex items-center justify-center text-foreground font-bold text-xl shadow-md hover:shadow-lg"
                             >
                                 +
                             </button>
