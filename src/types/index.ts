@@ -53,7 +53,6 @@ export interface DialInInput {
     dose: number;      // grams
     yield: number;     // grams  
     time: number;      // seconds
-    grindSetting: number; // 1-10 scale (1=coarse, 10=fine)
 }
 
 export interface DialInRecommendation {
