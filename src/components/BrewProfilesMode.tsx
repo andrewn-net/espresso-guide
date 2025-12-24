@@ -68,9 +68,18 @@ export default function BrewProfilesMode() {
                             {user ? <Cloud size={20} /> : <CloudOff size={20} />}
                         </div>
                         <div>
-                            <p className="text-sm font-bold">{user ? 'Cloud Sync Active' : 'Local Only'}</p>
+                            <p className="text-sm font-bold">
+                                {user ? 'Cloud Sync Active' : 'Local Only'}
+                            </p>
                             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                                {user ? `Signed in as ${user.email}` : 'Sign in to save across devices'}
+                                {user ? (
+                                    `Signed in as ${user.email}`
+                                ) : (
+                                    <>
+                                        Sign in to save<br />
+                                        across devices
+                                    </>
+                                )}
                             </p>
                         </div>
                     </div>
