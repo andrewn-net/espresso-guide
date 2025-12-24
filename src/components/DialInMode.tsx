@@ -380,7 +380,7 @@ export default function DialInMode() {
                                 className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2"
                             >
                                 <Save size={18} />
-                                Confirm & Save to Cloud
+                                Confirm & Save
                             </button>
                         </div>
                     </div>
