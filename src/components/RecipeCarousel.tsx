@@ -40,7 +40,7 @@ export default function RecipeCarousel({ recipes }: RecipeCarouselProps) {
                 }}
             />
 
-            <div className="w-full max-w-7xl mx-auto px-4 md:px-4 px-0 relative z-10">
+            <div className="w-full max-w-7xl mx-auto px-4 relative z-10">
                 <Splide
                     options={{
                         type: 'loop',
@@ -65,10 +65,10 @@ export default function RecipeCarousel({ recipes }: RecipeCarouselProps) {
                     className="recipe-splide"
                 >
                     {recipes.map((recipe) => (
-                        <SplideSlide key={recipe.id}>
+                        <SplideSlide key={recipe.id} className="h-auto">
                             <div className="group relative flex flex-col h-full bg-[hsl(var(--card)/0.85)] border border-[hsl(var(--border)/0.6)] rounded-3xl overflow-hidden backdrop-blur-sm transition-all duration-500 shadow-[0_18px_48px_-30px_hsl(var(--foreground)/0.35)]">
                                 {/* Image Section */}
-                                <div className="h-[200px] md:h-[240px] overflow-hidden relative flex-shrink-0">
+                                <div className="h-[180px] md:h-[240px] overflow-hidden relative flex-shrink-0">
                                     <div
                                         className="absolute inset-0 z-10 pointer-events-none"
                                         style={{
@@ -87,7 +87,7 @@ export default function RecipeCarousel({ recipes }: RecipeCarouselProps) {
                                 </div>
 
                                 {/* Content Section */}
-                                <div className="flex flex-1 flex-col overflow-hidden p-4 md:p-6">
+                                <div className="flex flex-1 flex-col overflow-hidden p-4 md:p-6 min-h-0">
                                     <div className="mb-3 md:mb-4 flex-shrink-0">
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="text-xl md:text-2xl font-black tracking-tight text-foreground group-hover:text-amber-500 transition-colors">
@@ -200,12 +200,13 @@ export default function RecipeCarousel({ recipes }: RecipeCarouselProps) {
 
         .recipe-splide .splide__slide {
           display: flex;
-          height: 100%;
+          height: auto;
         }
 
         .recipe-splide .splide__slide > div {
+          display: flex;
+          flex-direction: column;
           width: 100%;
-          height: 100%;
         }
         .splide__arrow svg {
           fill: currentColor;
