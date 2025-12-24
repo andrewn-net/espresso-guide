@@ -65,8 +65,8 @@ export default function RecipeCarousel({ recipes }: RecipeCarouselProps) {
                     className="recipe-splide"
                 >
                     {recipes.map((recipe) => (
-                        <SplideSlide key={recipe.id} className="h-auto">
-                            <div className="group relative flex flex-col h-full bg-[hsl(var(--card)/0.85)] border border-[hsl(var(--border)/0.6)] rounded-3xl overflow-hidden backdrop-blur-sm transition-all duration-500 shadow-[0_18px_48px_-30px_hsl(var(--foreground)/0.35)]">
+                        <SplideSlide key={recipe.id} className="h-full">
+                            <div className="group relative flex flex-col min-h-[520px] md:min-h-[620px] h-full bg-[hsl(var(--card)/0.85)] border border-[hsl(var(--border)/0.6)] rounded-3xl overflow-hidden backdrop-blur-sm transition-all duration-500 shadow-[0_18px_48px_-30px_hsl(var(--foreground)/0.35)]">
                                 {/* Image Section */}
                                 <div className="h-[180px] md:h-[240px] overflow-hidden relative flex-shrink-0">
                                     <div
@@ -88,7 +88,7 @@ export default function RecipeCarousel({ recipes }: RecipeCarouselProps) {
 
                                 {/* Content Section */}
                                 <div className="flex flex-1 flex-col overflow-hidden p-4 md:p-6 min-h-0">
-                                    <div className="mb-3 md:mb-4 flex-shrink-0">
+                                    <div className="mb-3 md:mb-4 flex-shrink-0 min-h-[100px] md:min-h-[110px]">
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="text-xl md:text-2xl font-black tracking-tight text-foreground group-hover:text-amber-500 transition-colors">
                                                 {recipe.fullTitle || recipe.title}
