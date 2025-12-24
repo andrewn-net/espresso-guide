@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Upload, Loader2, Video } from "lucide-react";
+import { Upload, Loader2, Video, Camera } from "lucide-react";
 import { analyzeEspressoShot, type AnalysisResult } from "@/lib/gemini";
 import AnalysisResults from "./AnalysisResults";
 
@@ -119,11 +119,14 @@ export default function AnalysisMode() {
                     }}
                 />
 
-                <div className="relative z-10 w-full max-w-3xl mx-auto px-4 md:px-8 space-y-6">
-                    <div className="text-center space-y-2">
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                            Analysis Complete
-                        </h1>
+                <div className="relative z-10 w-full max-w-2xl mx-auto px-4 md:px-8 space-y-6">
+                    <div className="flex flex-col items-center gap-2 text-center pb-4">
+                        <div className="flex items-center gap-2">
+                            <Camera className="w-6 h-6 text-primary" />
+                            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                                Analysis Complete
+                            </h1>
+                        </div>
                     </div>
                     <AnalysisResults result={result} />
                     <button
@@ -146,7 +149,7 @@ export default function AnalysisMode() {
                 }}
             />
 
-            <div className="relative z-10 w-full max-w-md mx-auto px-4 md:px-8 space-y-8 flex flex-col items-center">
+            <div className="relative z-10 w-full max-w-2xl mx-auto px-4 md:px-6 space-y-8">
                 {/* Debug Overlay */}
                 {showDebug && (
                     <div className="fixed top-0 left-0 w-full h-full bg-black/90 text-green-400 font-mono text-xs p-4 overflow-auto z-50 pointer-events-none">
@@ -158,19 +161,22 @@ export default function AnalysisMode() {
                 )}
 
                 {/* Main Content */}
-                <div className="w-full space-y-8 flex flex-col items-center transition-all duration-500">
+                <div className="w-full space-y-8 flex flex-col transition-all duration-500">
                     {/* Header - Triple Tap for Debug */}
-                    <div className="text-center space-y-2" onClick={toggleDebug}>
-                        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent select-none cursor-pointer">
-                            Visual Analysis
-                        </h1>
-                        <p className="text-muted-foreground text-sm">
+                    <div className="w-full space-y-1" onClick={toggleDebug}>
+                        <div className="flex items-center gap-2">
+                            <Camera className="w-6 h-6 text-primary" />
+                            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent select-none cursor-pointer">
+                                Visual Shot Analysis
+                            </h1>
+                        </div>
+                        <p className="text-xs md:text-sm text-muted-foreground ml-8">
                             Record your extraction flow
                         </p>
                     </div>
 
                     {/* Primary Action: Camera */}
-                    <div className="w-full relative group">
+                    <div className="w-full flex justify-center relative group">
                         <button
                             onClick={() => cameraInputRef.current?.click()}
                             disabled={status === 'analyzing'}
@@ -202,13 +208,15 @@ export default function AnalysisMode() {
 
                     {/* Secondary: Upload */}
                     {status !== 'analyzing' && (
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-2 transition-colors px-4 py-2 rounded-full hover:bg-secondary/40"
-                        >
-                            <Upload size={14} />
-                            <span>Or upload existing video</span>
-                        </button>
+                        <div className="flex justify-center">
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-2 transition-colors px-4 py-2 rounded-full hover:bg-secondary/40"
+                            >
+                                <Upload size={14} />
+                                <span>Or upload existing video</span>
+                            </button>
+                        </div>
                     )}
 
                     {/* Hidden Inputs */}
@@ -230,8 +238,10 @@ export default function AnalysisMode() {
 
                     {/* Error Message */}
                     {errorMsg && (
-                        <div className="p-4 bg-rose-500/10 text-rose-500 text-sm rounded-xl text-center border border-rose-500/20 max-w-sm animate-in fade-in slide-in-from-top-2">
-                            {errorMsg}
+                        <div className="flex justify-center w-full">
+                            <div className="p-4 bg-rose-500/10 text-rose-500 text-sm rounded-xl text-center border border-rose-500/20 max-w-sm animate-in fade-in slide-in-from-top-2">
+                                {errorMsg}
+                            </div>
                         </div>
                     )}
                 </div>

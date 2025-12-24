@@ -47,7 +47,7 @@ export default function AnalysisResults({ result }: AnalysisResultsProps) {
 
             {/* Actionable Advice */}
             <div className="space-y-3">
-                <h3 className="text-xs font-bold text-muted-foreground/70 uppercase tracking-widest pl-2">Adjustments</h3>
+                <h3 className="text-xs font-bold text-muted-foreground/70 uppercase tracking-widest text-center">Adjustments</h3>
                 {result.advice.map((tip, i) => (
                     <div key={i} className="flex items-start gap-4 p-4 rounded-2xl bg-secondary/30 border border-border/50">
                         <div className="mt-1 bg-primary/20 text-primary p-1.5 rounded-full shrink-0">

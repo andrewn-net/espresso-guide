@@ -65,18 +65,20 @@ export default function DialInMode() {
                 }}
             />
 
-            <div className="relative z-10 w-full max-w-2xl mx-auto px-3 md:px-6 space-y-4">
-                {/* Header - Compact */}
-                <div className="text-center space-y-1">
-                    <div className="flex items-center justify-center gap-1.5">
-                        <Coffee className="w-6 h-6 text-primary" />
-                        <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                            Dial In Your Shot
-                        </h1>
+            <div className="relative z-10 w-full max-w-2xl mx-auto px-4 md:px-6 space-y-4">
+                {/* Header - Unified Style */}
+                <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                            <Coffee className="w-6 h-6 text-primary" />
+                            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                                Dial In Your Shot
+                            </h1>
+                        </div>
+                        <p className="text-xs md:text-sm text-muted-foreground ml-8">
+                            Enter your extraction parameters
+                        </p>
                     </div>
-                    <p className="text-xs md:text-sm text-muted-foreground">
-                        Enter your espresso parameters
-                    </p>
                 </div>
 
                 {/* Input Section - Optimized for Mobile */}

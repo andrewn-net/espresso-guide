@@ -14,6 +14,7 @@ interface StoreState {
     currentRecipe: Recipe;
     isPrecisionMode: boolean;
     brewProfiles: BrewProfile[];
+    activeMode: 'recipe' | 'dialin' | 'analysis' | 'profiles';
 
     // Actions
     setBaseDrink: (base: DrinkBase) => void;
@@ -33,6 +34,7 @@ interface StoreState {
     loadPreset: (presetName: string) => void;
     loadRecipe: (recipe: Recipe) => void;
     resetToEspresso: () => void;
+    setActiveMode: (mode: 'recipe' | 'dialin' | 'analysis' | 'profiles') => void;
 
     // Theme
     theme: 'dark' | 'light';
@@ -146,6 +148,7 @@ export const useStore = create<StoreState>()(
             currentRecipe: createInitialRecipe(),
             isPrecisionMode: false,
             brewProfiles: [],
+            activeMode: 'dialin',
 
             theme: getInitialTheme(),
 
@@ -242,14 +245,19 @@ export const useStore = create<StoreState>()(
                         id: newProfile.id,
                         user_id: user.id,
                         bean_name: newProfile.beanName,
-                        roast_date: newProfile.roastDate,
+                        roast_date: newProfile.roastDate || null, // FIX: Convert empty string to null
                         grind_setting: newProfile.grindSetting,
-                        dose: newProfile.dose,
-                        expected_yield: newProfile.expectedYield,
-                        expected_time: newProfile.expectedTime,
-                        notes: newProfile.notes
+                        dose: Number(newProfile.dose),
+                        expected_yield: Number(newProfile.expectedYield),
+                        expected_time: Number(newProfile.expectedTime),
+                        notes: newProfile.notes || null
                     });
-                    if (error) console.error('Error saving to cloud:', error);
+
+                    if (error) {
+                        console.error('SUPABASE INSERT ERROR:', error.message, error.details, error.hint);
+                        alert(`Cloud save failed: ${error.message}`);
+                        return; // Don't update local state if cloud save failed while logged in
+                    }
                 }
 
                 set(state => ({ brewProfiles: [newProfile, ...state.brewProfiles] }));
@@ -262,18 +270,18 @@ export const useStore = create<StoreState>()(
                 if (user) {
                     const dbUpdates: any = { last_updated: lastUpdated };
                     if (updates.beanName) dbUpdates.bean_name = updates.beanName;
-                    if (updates.roastDate) dbUpdates.roast_date = updates.roastDate;
+                    if (updates.roastDate !== undefined) dbUpdates.roast_date = updates.roastDate || null;
                     if (updates.grindSetting) dbUpdates.grind_setting = updates.grindSetting;
-                    if (updates.dose) dbUpdates.dose = updates.dose;
-                    if (updates.expectedYield) dbUpdates.expected_yield = updates.expectedYield;
-                    if (updates.expectedTime) dbUpdates.expected_time = updates.expectedTime;
-                    if (updates.notes) dbUpdates.notes = updates.notes;
+                    if (updates.dose !== undefined) dbUpdates.dose = Number(updates.dose);
+                    if (updates.expectedYield !== undefined) dbUpdates.expected_yield = Number(updates.expectedYield);
+                    if (updates.expectedTime !== undefined) dbUpdates.expected_time = Number(updates.expectedTime);
+                    if (updates.notes !== undefined) dbUpdates.notes = updates.notes || null;
 
                     const { error } = await supabase
                         .from('brew_profiles')
                         .update(dbUpdates)
                         .eq('id', id);
-                    if (error) console.error('Error updating cloud:', error);
+                    if (error) console.error('SUPABASE UPDATE ERROR:', error.message);
                 }
 
                 set(state => ({
@@ -357,7 +365,9 @@ export const useStore = create<StoreState>()(
             signOut: async () => {
                 await supabase.auth.signOut();
                 set({ user: null, session: null, brewProfiles: [] });
-            }
+            },
+
+            setActiveMode: (mode) => set({ activeMode: mode })
         }),
         {
             name: 'coffee-app-storage',
@@ -365,6 +375,7 @@ export const useStore = create<StoreState>()(
                 theme: state.theme,
                 brewProfiles: state.brewProfiles,
                 isPrecisionMode: state.isPrecisionMode,
+                activeMode: state.activeMode,
             }),
         }
     )

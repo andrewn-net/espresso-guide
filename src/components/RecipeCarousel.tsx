@@ -110,16 +110,14 @@ export default function RecipeCarousel({ recipes }: RecipeCarouselProps) {
                                             <span className="block text-muted-foreground text-[10px] uppercase font-bold tracking-wider mb-0.5">Yield</span>
                                             <span className="text-foreground font-mono text-xs">{recipe.recipe.yield}</span>
                                         </div>
-                                        {(recipe.recipe.milk || recipe.recipe.water) && (
-                                            <div className="col-span-2 rounded-lg p-2.5 bg-[hsl(var(--secondary)/0.85)] border border-[hsl(var(--border)/0.4)] flex items-center justify-between">
-                                                <span className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider">
-                                                    {recipe.recipe.milk ? 'Milk' : 'Water'}
-                                                </span>
-                                                <span className="text-foreground font-mono text-xs">
-                                                    {recipe.recipe.milk || recipe.recipe.water}
-                                                </span>
-                                            </div>
-                                        )}
+                                        <div className="col-span-2 rounded-lg p-2.5 bg-[hsl(var(--secondary)/0.85)] border border-[hsl(var(--border)/0.4)] flex items-center justify-between">
+                                            <span className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider">
+                                                {!(recipe.recipe.milk || recipe.recipe.water) ? 'No Milk' : (recipe.recipe.water && !recipe.recipe.milk ? 'Water' : 'Milk')}
+                                            </span>
+                                            <span className="text-foreground font-mono text-xs">
+                                                {recipe.recipe.milk || recipe.recipe.water || ''}
+                                            </span>
+                                        </div>
                                     </div>
 
                                     {/* Steps Section */}

@@ -77,7 +77,7 @@ export default function BrewProfilesMode() {
                     {user ? (
                         <button
                             onClick={signOut}
-                            className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-xl text-xs font-bold transition-all"
+                            className="flex items-center gap-2 px-3 py-2 bg-secondary hover:bg-secondary/80 rounded-xl text-xs font-bold transition-all whitespace-nowrap"
                         >
                             <LogOut size={14} />
                             Sign Out
@@ -85,7 +85,7 @@ export default function BrewProfilesMode() {
                     ) : (
                         <button
                             onClick={handleSignIn}
-                            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-bold shadow-lg hover:opacity-90 transition-all"
+                            className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-bold shadow-lg hover:opacity-90 transition-all whitespace-nowrap"
                         >
                             <LogIn size={14} />
                             Sign In
@@ -252,7 +252,7 @@ export default function BrewProfilesMode() {
                                     </div>
                                     <button
                                         onClick={() => removeBrewProfile(profile.id)}
-                                        className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                                        className="p-2 text-muted-foreground/60 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
                                     >
                                         <Trash2 size={18} />
                                     </button>
