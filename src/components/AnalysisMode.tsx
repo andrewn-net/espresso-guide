@@ -30,22 +30,22 @@ export default function AnalysisMode() {
 
     const validateVideo = (file: File): Promise<void> => {
         return new Promise((resolve, reject) => {
-            // 1. Size Check (50MB limit)
-            const MAX_SIZE_MB = 50;
+            // 1. Size Check (100MB limit)
+            const MAX_SIZE_MB = 100;
             if (file.size > MAX_SIZE_MB * 1024 * 1024) {
                 reject(new Error(`Video is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Limit is ${MAX_SIZE_MB}MB.`));
                 return;
             }
 
-            // 2. Duration Check (30s limit)
+            // 2. Duration Check (60s limit)
             const video = document.createElement('video');
             video.preload = 'metadata';
 
             video.onloadedmetadata = () => {
                 window.URL.revokeObjectURL(video.src);
                 const duration = video.duration;
-                if (duration > 32) { // Allow slight buffer
-                    reject(new Error(`Video is too long (${duration.toFixed(0)}s). Please keep it under 30s.`));
+                if (duration > 62) { // Allow slight buffer
+                    reject(new Error(`Video is too long (${duration.toFixed(0)}s). Please keep it under 60s.`));
                 } else {
                     resolve();
                 }
