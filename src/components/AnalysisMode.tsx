@@ -4,7 +4,6 @@ import { analyzeEspressoShot, type AnalysisResult } from "@/lib/gemini";
 import AnalysisResults from "./AnalysisResults";
 
 export default function AnalysisMode() {
-    const apiKey = import.meta.env.GEMINI_API; // Read from env
     const [status, setStatus] = useState<'idle' | 'analyzing' | 'complete' | 'error'>('idle');
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -69,13 +68,6 @@ export default function AnalysisMode() {
             return;
         }
 
-        if (!apiKey) {
-            const msg = "Error: API Key missing.";
-            setErrorMsg(msg);
-            addLog(msg);
-            return;
-        }
-
         setErrorMsg(null);
         setStatus('analyzing');
         setResult(null);
@@ -88,8 +80,7 @@ export default function AnalysisMode() {
 
             const data = await analyzeEspressoShot(
                 selectedFile,
-                {}, // Minimal mode: No metadata
-                apiKey
+                {} // Minimal mode: No metadata
             );
             addLog("API Response received.");
             setResult(data);
@@ -241,13 +232,6 @@ export default function AnalysisMode() {
                     {errorMsg && (
                         <div className="p-4 bg-rose-500/10 text-rose-500 text-sm rounded-xl text-center border border-rose-500/20 max-w-sm animate-in fade-in slide-in-from-top-2">
                             {errorMsg}
-                        </div>
-                    )}
-
-                    {/* Env Warning */}
-                    {!apiKey && (
-                        <div className="text-xs text-rose-500/80 text-center max-w-xs">
-                            Warning: Gemini API Key not found. Analysis will fail.
                         </div>
                     )}
                 </div>
