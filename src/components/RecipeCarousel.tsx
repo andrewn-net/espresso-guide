@@ -65,8 +65,8 @@ export default function RecipeCarousel({ recipes }: RecipeCarouselProps) {
                     className="recipe-splide"
                 >
                     {recipes.map((recipe) => (
-                        <SplideSlide key={recipe.id} className="h-full">
-                            <div className="group relative flex flex-col min-h-[480px] h-[calc(100dvh-12.5rem)] md:h-[620px] md:min-h-[620px] lg:h-[660px] bg-[hsl(var(--card)/0.85)] border border-[hsl(var(--border)/0.6)] rounded-3xl overflow-hidden backdrop-blur-sm transition-all duration-500 shadow-[0_18px_48px_-30px_hsl(var(--foreground)/0.35)]">
+                        <SplideSlide key={recipe.id}>
+                            <div className="group relative flex flex-col h-full bg-[hsl(var(--card)/0.85)] border border-[hsl(var(--border)/0.6)] rounded-3xl overflow-hidden backdrop-blur-sm transition-all duration-500 shadow-[0_18px_48px_-30px_hsl(var(--foreground)/0.35)]">
                                 {/* Image Section */}
                                 <div className="h-[200px] md:h-[240px] overflow-hidden relative flex-shrink-0">
                                     <div

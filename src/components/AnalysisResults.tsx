@@ -15,19 +15,19 @@ export default function AnalysisResults({ result }: AnalysisResultsProps) {
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
 
-            {/* Minimal Score Header */}
-            <div className="text-center space-y-1">
-                <div className={`text-7xl font-black ${getScoreColor(result.score)} tracking-tighter`}>
-                    {result.score}
-                </div>
+            {/* Score Card - Now in a box */}
+            <div className="bg-card p-8 rounded-3xl shadow-sm border border-border/50 text-center space-y-2">
                 <div className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
                     Extraction Score
                 </div>
+                <div className={`text-7xl font-black ${getScoreColor(result.score)} tracking-tighter`}>
+                    {result.score}
+                </div>
             </div>
 
-            {/* AI Insight Card */}
-            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border/50 text-center space-y-4">
-                <p className="text-lg font-medium leading-relaxed text-card-foreground">
+            {/* Description - Now underneath */}
+            <div className="text-center space-y-4">
+                <p className="text-lg font-medium leading-relaxed text-foreground">
                     {result.flowRateObservations}
                 </p>
                 <div className="flex flex-wrap justify-center gap-2">
