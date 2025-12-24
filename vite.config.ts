@@ -9,6 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  envPrefix: ['VITE_', 'GEMINI_'],
   resolve: {
     alias: {
       '@': '/src',

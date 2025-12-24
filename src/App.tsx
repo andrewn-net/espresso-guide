@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import RadialOrbitalTimeline, { type TimelineItem } from "@/components/ui/radial-orbital-timeline";
+import RecipeCarousel from "@/components/RecipeCarousel";
 import DialInMode from "@/components/DialInMode";
-import { Coffee, Droplets, Wind, Zap, Sun, Moon, Settings2 } from "lucide-react";
+import AnalysisMode from "@/components/AnalysisMode";
+import { Coffee, Droplets, Wind, Zap, Sun, Moon, Settings2, Camera } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
 // Extended Drink Definitions for the Radial Menu
@@ -29,7 +30,8 @@ const DRINKS = [
     steps: [
       "Fill cup with 120ml hot water (90°C)",
       "Extract double shot (36g) directly over water",
-      "Serve immediately to preserve crema"
+      "Watch the crema form on top",
+      "Serve immediately to preserve crema and aroma"
     ],
     icon: Droplets,
     energy: 80,
@@ -43,9 +45,11 @@ const DRINKS = [
     description: "Silky, smooth microfoam integrated with espresso.",
     recipe: { dose: "18g", yield: "36g", milk: "150ml" },
     steps: [
-      "Extract double shot (36g)",
-      "Steam milk to microfoam (latex paint texture)",
-      "Pour aggressive art pattern"
+      "Extract double shot (36g) into a 180ml cup",
+      "Steam milk to 60-65°C with microfoam (latex paint texture)",
+      "Swirl milk to integrate foam",
+      "Pour from height to break crema, then lower for latte art",
+      "Aim for a thin layer of microfoam on top"
     ],
     icon: Wind,
     energy: 60,
@@ -59,9 +63,11 @@ const DRINKS = [
     description: "Creamy and comforting with more milk.",
     recipe: { dose: "18g", yield: "36g", milk: "220ml" },
     steps: [
-      "Extract double shot (36g)",
-      "Steam milk with slightly more foam",
-      "Pour gently for a creamy finish"
+      "Extract double shot (36g) into a large cup",
+      "Steam milk to 60-65°C with slightly more foam than flat white",
+      "Swirl pitcher to integrate foam",
+      "Pour gently from height for a creamy finish",
+      "Create latte art if desired"
     ],
     icon: Coffee,
     energy: 40,
@@ -74,9 +80,11 @@ const DRINKS = [
     description: "Rich textures with equal parts foam, milk, and espresso.",
     recipe: { dose: "18g", yield: "36g", milk: "150ml" },
     steps: [
-      "Extract double shot (36g)",
-      "Steam milk to thick, dense foam",
-      "Pour to create a distinct foam cap"
+      "Extract double shot (36g) into a 180ml cup",
+      "Steam milk to 60-65°C with thick, dense foam",
+      "Tap pitcher to remove large bubbles",
+      "Pour to create a distinct 1cm foam cap",
+      "Optionally dust with cocoa powder"
     ],
     icon: Wind,
     energy: 50,
@@ -147,8 +155,8 @@ const DRINKS = [
 
 export default function App() {
   const { theme, toggleTheme } = useStore();
-  const [timelineData, setTimelineData] = useState<TimelineItem[]>([]);
-  const [mode, setMode] = useState<'recipe' | 'dialin'>('dialin');
+
+  const [mode, setMode] = useState<'recipe' | 'dialin' | 'analysis'>('dialin');
 
   // Apply theme class to document root
   useEffect(() => {
@@ -157,36 +165,7 @@ export default function App() {
     root.classList.add(theme);
   }, [theme]);
 
-  useEffect(() => {
-    // Map static DRINKS to TimelineItem format with Rich Content
-    const nodes: TimelineItem[] = DRINKS.map(drink => ({
-      id: drink.id,
-      title: drink.title,
-      // @ts-ignore
-      fullTitle: drink.fullTitle,
-      date: "Recipe",
-      // Rich Content Render
-      content: (
-        <div className="space-y-3">
-          <p className="italic text-muted-foreground">{drink.description}</p>
-          <div className="bg-secondary/50 p-2 rounded text-[10px] font-mono grid grid-cols-2 gap-2 text-foreground">
-            {Object.entries(drink.recipe).map(([k, v]) => (
-              <div key={k}><span className="opacity-50 uppercase mr-1">{k}:</span>{v}</div>
-            ))}
-          </div>
-          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-            {drink.steps.map((step, i) => <li key={i}>{step}</li>)}
-          </ul>
-        </div>
-      ),
-      category: "Menu",
-      icon: drink.icon,
-      image: drink.image,
-      energy: drink.energy
-    }));
 
-    setTimelineData(nodes);
-  }, [theme]); // Re-render content when theme changes to ensure utility classes update? actually CSS handle it
 
   return (
     <div className="relative w-full h-[100dvh] bg-background transition-colors duration-500">
@@ -201,37 +180,49 @@ export default function App() {
       </div>
 
       {/* Main Content */}
-      {mode === 'recipe' ? (
-        <RadialOrbitalTimeline timelineData={timelineData} />
-      ) : (
-        <DialInMode />
-      )}
+      {mode === 'recipe' && <RecipeCarousel recipes={DRINKS} />}
+      {mode === 'dialin' && <DialInMode />}
+      {mode === 'analysis' && <AnalysisMode />}
+
 
       {/* Floating Bottom Tab Navigation */}
       <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4">
         <div className="bg-secondary/90 backdrop-blur-xl rounded-full border border-border/50 shadow-2xl p-1.5 flex gap-1">
           <button
             onClick={() => setMode('dialin')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all ${mode === 'dialin'
+            className={`flex items-center gap-2 px-4 py-3 rounded-full font-semibold transition-all ${mode === 'dialin'
               ? 'bg-primary text-primary-foreground shadow-lg'
               : 'text-foreground hover:bg-secondary/50'
               }`}
           >
             <Settings2 size={20} />
-            <span>Dial-In</span>
+            {mode === 'dialin' && <span className="animate-in fade-in slide-in-from-left-2 duration-300">Dial-In</span>}
           </button>
+
+          <button
+            onClick={() => setMode('analysis')}
+            className={`flex items-center gap-2 px-4 py-3 rounded-full font-semibold transition-all ${mode === 'analysis'
+              ? 'bg-primary text-primary-foreground shadow-lg'
+              : 'text-foreground hover:bg-secondary/50'
+              }`}
+          >
+            <Camera size={20} />
+            {mode === 'analysis' && <span className="animate-in fade-in slide-in-from-left-2 duration-300">Analysis</span>}
+          </button>
+
           <button
             onClick={() => setMode('recipe')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all ${mode === 'recipe'
+            className={`flex items-center gap-2 px-4 py-3 rounded-full font-semibold transition-all ${mode === 'recipe'
               ? 'bg-primary text-primary-foreground shadow-lg'
               : 'text-foreground hover:bg-secondary/50'
               }`}
           >
             <Coffee size={20} />
-            <span>Recipes</span>
+            {mode === 'recipe' && <span className="animate-in fade-in slide-in-from-left-2 duration-300">Recipes</span>}
           </button>
         </div>
       </div>
     </div>
   );
 }
+

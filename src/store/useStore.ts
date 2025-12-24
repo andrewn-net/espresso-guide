@@ -27,6 +27,8 @@ interface StoreState {
     // Theme
     theme: 'dark' | 'light';
     toggleTheme: () => void;
+
+
 }
 
 const PRESETS: Record<string, Recipe> = {
