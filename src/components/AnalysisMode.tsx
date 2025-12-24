@@ -163,14 +163,14 @@ export default function AnalysisMode() {
                 {/* Main Content */}
                 <div className="w-full space-y-8 flex flex-col transition-all duration-500">
                     {/* Header - Triple Tap for Debug */}
-                    <div className="w-full space-y-1" onClick={toggleDebug}>
+                    <div className="w-full space-y-1 flex flex-col items-center text-center" onClick={toggleDebug}>
                         <div className="flex items-center gap-2">
                             <Camera className="w-6 h-6 text-primary" />
                             <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent select-none cursor-pointer">
                                 Visual Shot Analysis
                             </h1>
                         </div>
-                        <p className="text-xs md:text-sm text-muted-foreground ml-8">
+                        <p className="text-xs md:text-sm text-muted-foreground">
                             Record your extraction flow
                         </p>
                     </div>

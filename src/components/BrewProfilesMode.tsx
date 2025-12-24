@@ -53,7 +53,7 @@ export default function BrewProfilesMode() {
 
             <div className="relative z-10 w-full max-w-2xl mx-auto px-4 md:px-6 space-y-8">
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col items-center text-center">
                     <div className="flex items-center gap-2">
                         <BookOpen className="w-6 h-6 text-primary" />
                         <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
