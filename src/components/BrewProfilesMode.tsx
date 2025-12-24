@@ -77,8 +77,7 @@ export default function BrewProfilesMode() {
                                     `Signed in as ${user.email}`
                                 ) : (
                                     <>
-                                        Sign in to save<br />
-                                        across devices
+                                        Sign in to save <br className="md:hidden" /> across devices
                                     </>
                                 )}
                             </p>
