@@ -18,20 +18,26 @@ export interface AnalysisResult {
 
 // Helper to extract 3 frames (Start, Middle, End) from video
 async function extractFrames(videoFile: File): Promise<string[]> {
-    console.log("DEBUG: Starting frame extraction for file:", videoFile.name);
+    console.log("DEBUG: Starting frame extraction for file:", videoFile.name, "type:", videoFile.type, "size:", (videoFile.size / 1024 / 1024).toFixed(2) + "MB");
 
     // Create elements
     const video = document.createElement('video');
     video.muted = true;
     video.playsInline = true;
-    video.preload = 'auto'; // Ensure video data is loaded
+    video.preload = 'auto';
+    video.autoplay = false;
+    // iOS-specific attributes
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('playsinline', 'true');
+
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { willReadFrequently: true });
 
     if (!context) throw new Error("Could not get canvas context");
 
     const fileUrl = URL.createObjectURL(videoFile);
     video.src = fileUrl;
+    video.load(); // Explicitly start loading
 
     const frames: string[] = [];
     const points = [0.2, 0.5, 0.8]; // Extract at 20%, 50%, 80%
@@ -40,9 +46,25 @@ async function extractFrames(videoFile: File): Promise<string[]> {
         // 1. Wait for metadata to load
         console.log("DEBUG: Waiting for metadata...");
         await new Promise<void>((resolve, reject) => {
-            video.onloadedmetadata = () => resolve();
-            video.onerror = (e) => reject(new Error("Video load error: " + e));
-            setTimeout(() => reject(new Error("Timeout waiting for video metadata")), 10000);
+            const onMetadata = () => {
+                video.removeEventListener('loadedmetadata', onMetadata);
+                video.removeEventListener('error', onError);
+                resolve();
+            };
+            const onError = (e: Event) => {
+                video.removeEventListener('loadedmetadata', onMetadata);
+                video.removeEventListener('error', onError);
+                reject(new Error("Video load error: " + (e as ErrorEvent).message));
+            };
+
+            video.addEventListener('loadedmetadata', onMetadata);
+            video.addEventListener('error', onError);
+
+            setTimeout(() => {
+                video.removeEventListener('loadedmetadata', onMetadata);
+                video.removeEventListener('error', onError);
+                reject(new Error("Timeout waiting for video metadata"));
+            }, 15000);
         });
 
         console.log("DEBUG: Metadata loaded.", video.duration, video.videoWidth, video.videoHeight);
@@ -56,19 +78,38 @@ async function extractFrames(videoFile: File): Promise<string[]> {
         canvas.width = Math.floor((video.videoWidth || 1920) / 4);
         canvas.height = Math.floor((video.videoHeight || 1080) / 4);
 
-        // 2. Wait for video to be ready to play (data loaded)
+        // 2. Try to wait for video data, but don't fail if it takes too long
         console.log("DEBUG: Waiting for video data to load...");
-        await new Promise<void>((resolve, reject) => {
-            if (video.readyState >= 2) { // HAVE_CURRENT_DATA or better
-                resolve();
-            } else {
-                video.onloadeddata = () => resolve();
-                video.onerror = reject;
-                setTimeout(() => reject(new Error("Timeout waiting for video data")), 10000);
-            }
-        });
+        try {
+            await new Promise<void>((resolve) => {
+                if (video.readyState >= 2) { // HAVE_CURRENT_DATA or better
+                    resolve();
+                    return;
+                }
 
-        console.log("DEBUG: Video data loaded, ready to seek");
+                const onData = () => {
+                    video.removeEventListener('loadeddata', onData);
+                    video.removeEventListener('canplay', onData);
+                    clearTimeout(timeoutId);
+                    resolve();
+                };
+
+                video.addEventListener('loadeddata', onData);
+                video.addEventListener('canplay', onData);
+
+                const timeoutId = setTimeout(() => {
+                    video.removeEventListener('loadeddata', onData);
+                    video.removeEventListener('canplay', onData);
+                    // Don't reject, just resolve - we'll try seeking anyway
+                    console.log("DEBUG: Video data load timeout, proceeding anyway...");
+                    resolve();
+                }, 5000); // Shorter timeout, we'll proceed anyway
+            });
+        } catch (e) {
+            console.log("DEBUG: Video data load failed, proceeding with metadata only");
+        }
+
+        console.log("DEBUG: Video ready state:", video.readyState, "- proceeding to seek");
 
         // 3. Loop through timepoints sequentially
         for (const point of points) {
@@ -94,11 +135,21 @@ async function extractFrames(videoFile: File): Promise<string[]> {
                     video.removeEventListener('seeked', onSeeked);
                     video.removeEventListener('error', onError);
                     reject(new Error(`Timeout waiting for seek to ${time.toFixed(2)}s`));
-                }, 8000);
+                }, 12000); // Increased to 12s for iPhone videos
             });
 
             video.currentTime = time;
             await seekPromise;
+
+            // iOS workaround: briefly play then pause to ensure frame is decoded
+            try {
+                await video.play();
+                await new Promise(resolve => setTimeout(resolve, 50)); // Wait 50ms
+                video.pause();
+            } catch (e) {
+                console.log("DEBUG: Play/pause failed (expected on some browsers):", e);
+                // Not critical, continue anyway
+            }
 
             // Draw frame
             context.drawImage(video, 0, 0, canvas.width, canvas.height);

@@ -216,7 +216,7 @@ export default function AnalysisMode() {
                         type="file"
                         ref={cameraInputRef}
                         className="hidden"
-                        accept="video/*"
+                        accept="video/mp4,video/*"
                         capture="environment"
                         onChange={handleFileSelect}
                     />
