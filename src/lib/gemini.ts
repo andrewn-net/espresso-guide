@@ -2,6 +2,7 @@ export interface AnalysisMetadata {
     dose?: number;
     yield?: number;
     time?: number;
+    videoDuration?: number;
 }
 
 export interface AnalysisResult {
@@ -16,8 +17,8 @@ export interface AnalysisResult {
     colorDescription: string;
 }
 
-// Helper to extract 3 frames (Start, Middle, End) from video
-async function extractFrames(videoFile: File): Promise<string[]> {
+// Helper to extract 10 frames from video
+async function extractFrames(videoFile: File): Promise<{ frames: string[], duration: number }> {
     console.log("DEBUG: Starting frame extraction for file:", videoFile.name, "type:", videoFile.type, "size:", (videoFile.size / 1024 / 1024).toFixed(2) + "MB");
 
     // Create elements
@@ -40,7 +41,9 @@ async function extractFrames(videoFile: File): Promise<string[]> {
     video.load(); // Explicitly start loading
 
     const frames: string[] = [];
-    const points = [0.2, 0.5, 0.8]; // Extract at 20%, 50%, 80%
+    // Extract 10 frames spaced throughout the video for better temporal resolution
+    const points = Array.from({ length: 10 }, (_, i) => (i + 1) / 11);
+    const duration = video.duration;
 
     try {
         // 1. Wait for metadata to load
@@ -159,7 +162,7 @@ async function extractFrames(videoFile: File): Promise<string[]> {
         }
 
         console.log(`DEBUG: Extraction complete. Got ${frames.length} frames.`);
-        return frames;
+        return { frames, duration };
 
     } catch (error) {
         console.error("DEBUG: Frame extraction failed:", error);
@@ -183,11 +186,16 @@ export async function analyzeEspressoShot(
 
     try {
         console.log("Extracting frames from video...");
-        const frames = await extractFrames(file);
-        console.log(`Extracted ${frames.length} frames`);
+        const { frames, duration } = await extractFrames(file);
+        console.log(`Extracted ${frames.length} frames from ${duration.toFixed(2)}s video`);
+
+        const enrichedMetadata = {
+            ...metadata,
+            videoDuration: duration
+        };
 
         // Prepare frames for API
-        const frameData = frames.map(base64 => ({
+        const frameData = frames.map((base64: string) => ({
             data: base64,
             mimeType: "image/jpeg"
         }));
@@ -202,7 +210,7 @@ export async function analyzeEspressoShot(
             },
             body: JSON.stringify({
                 frames: frameData,
-                metadata,
+                metadata: enrichedMetadata,
                 useGemma: USE_GEMMA_MODEL
             })
         });

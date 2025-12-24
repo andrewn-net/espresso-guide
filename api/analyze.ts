@@ -73,13 +73,20 @@ export default async function handler(
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: modelName });
 
+        const duration = metadata?.videoDuration || 0;
         const promptWithMetadata = `
         ${ANALYSIS_PROMPT}
+        
+        CRITICAL TEMPORAL CONTEXT:
+        I am sending you exactly 10 frames extracted at regular intervals from a video that is ${duration} seconds long.
+        Frame 1 is at ~${(duration * 1 / 11).toFixed(1)}s, Frame 10 is at ~${(duration * 10 / 11).toFixed(1)}s.
+        Please use these intervals to provide ACCURATE timestamps in your response. 
+        DO NOT report timestamps longer than ${duration}s.
         
         Additional Context provided by user:
         Dose: ${metadata?.dose ? metadata.dose + 'g' : 'Unknown'}
         Yield: ${metadata?.yield ? metadata.yield + 'g' : 'Unknown'}
-        Time: ${metadata?.time ? metadata.time + 's' : 'Unknown'}
+        Target Time: ${metadata?.time ? metadata.time + 's' : 'Unknown'}
         `;
 
         const contentParts: any[] = [promptWithMetadata];

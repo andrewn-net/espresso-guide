@@ -38,7 +38,9 @@ interface StoreState {
 
     // Theme
     theme: 'dark' | 'light';
+    hasManualTheme: boolean;
     toggleTheme: () => void;
+    setTheme: (theme: 'dark' | 'light') => void;
 
     // Auth
     user: User | null;
@@ -135,9 +137,10 @@ const createInitialRecipe = (): Recipe => {
 
 const getInitialTheme = (): 'dark' | 'light' => {
     if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem('theme-preference');
-        if (saved === 'dark' || saved === 'light') return saved;
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const hasManual = localStorage.getItem('theme-manual');
+        if (!hasManual) {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
     }
     return 'dark';
 };
@@ -151,6 +154,7 @@ export const useStore = create<StoreState>()(
             activeMode: 'dialin',
 
             theme: getInitialTheme(),
+            hasManualTheme: typeof window !== 'undefined' ? !!localStorage.getItem('theme-manual') : false,
 
             setBaseDrink: (base) => {
                 const { currentRecipe } = get();
@@ -321,10 +325,11 @@ export const useStore = create<StoreState>()(
             toggleTheme: () => {
                 const { theme } = get();
                 const newTheme = theme === 'dark' ? 'light' : 'dark';
-                const root = window.document.documentElement;
-                root.classList.remove('light', 'dark');
-                root.classList.add(newTheme);
-                localStorage.setItem('theme-preference', newTheme);
+                localStorage.setItem('theme-manual', 'true');
+                set({ theme: newTheme, hasManualTheme: true });
+            },
+
+            setTheme: (newTheme) => {
                 set({ theme: newTheme });
             },
 
@@ -373,6 +378,7 @@ export const useStore = create<StoreState>()(
             name: 'coffee-app-storage',
             partialize: (state) => ({
                 theme: state.theme,
+                hasManualTheme: state.hasManualTheme,
                 brewProfiles: state.brewProfiles,
                 isPrecisionMode: state.isPrecisionMode,
                 activeMode: state.activeMode,

@@ -149,7 +149,20 @@ const DRINKS = [
 ];
 
 export default function App() {
-  const { theme, toggleTheme, setAuth, fetchProfiles, activeMode, setActiveMode } = useStore();
+  const { theme, toggleTheme, setTheme, hasManualTheme, setAuth, fetchProfiles, activeMode, setActiveMode } = useStore();
+
+  // Listen for System Theme Changes
+  useEffect(() => {
+    if (hasManualTheme) return;
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      setTheme(e.matches ? 'dark' : 'light');
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [hasManualTheme, setTheme]);
 
   // Listen for Auth Changes
   useEffect(() => {
