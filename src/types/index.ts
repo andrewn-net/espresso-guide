@@ -71,3 +71,17 @@ export interface DialInRecommendation {
     explanation: string;
     tasteProfile: string;
 }
+
+export interface BrewProfile {
+    id: string;
+    beanName: string;
+    roastDate?: string;
+    grindSetting: string;
+    dose: number;
+    expectedYield: number;
+    expectedTime: number;
+    notes?: string;
+    rating?: number;
+    lastUpdated: string;
+}
+

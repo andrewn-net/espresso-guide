@@ -1,5 +1,8 @@
 import { create } from 'zustand';
-import type { Recipe, DrinkBase, DrinkComponent, ComponentType } from '../types';
+import { persist } from 'zustand/middleware';
+import type { Recipe, DrinkBase, DrinkComponent, ComponentType, BrewProfile } from '../types';
+import { supabase } from '../lib/supabase';
+import type { User, Session } from '@supabase/supabase-js';
 import {
     getDefaultEspressoParams,
     generateId,
@@ -10,6 +13,7 @@ import {
 interface StoreState {
     currentRecipe: Recipe;
     isPrecisionMode: boolean;
+    brewProfiles: BrewProfile[];
 
     // Actions
     setBaseDrink: (base: DrinkBase) => void;
@@ -20,15 +24,26 @@ interface StoreState {
 
     togglePrecisionMode: () => void;
 
+    // Brew Profiles
+    addBrewProfile: (profile: Omit<BrewProfile, 'id' | 'lastUpdated'>) => void;
+    updateBrewProfile: (id: string, updates: Partial<BrewProfile>) => void;
+    removeBrewProfile: (id: string) => void;
+
     // Preset Management
     loadPreset: (presetName: string) => void;
+    loadRecipe: (recipe: Recipe) => void;
     resetToEspresso: () => void;
 
     // Theme
     theme: 'dark' | 'light';
     toggleTheme: () => void;
 
-
+    // Auth
+    user: User | null;
+    session: Session | null;
+    setAuth: (user: User | null, session: Session | null) => void;
+    fetchProfiles: () => Promise<void>;
+    signOut: () => Promise<void>;
 }
 
 const PRESETS: Record<string, Recipe> = {
@@ -116,7 +131,6 @@ const createInitialRecipe = (): Recipe => {
     return { ...PRESETS['Espresso'], id: generateId() };
 };
 
-// Helper for initial theme
 const getInitialTheme = (): 'dark' | 'light' => {
     if (typeof window !== 'undefined') {
         const saved = localStorage.getItem('theme-preference');
@@ -126,116 +140,232 @@ const getInitialTheme = (): 'dark' | 'light' => {
     return 'dark';
 };
 
-export const useStore = create<StoreState>((set, get) => ({
-    currentRecipe: createInitialRecipe(),
-    isPrecisionMode: false,
+export const useStore = create<StoreState>()(
+    persist(
+        (set, get) => ({
+            currentRecipe: createInitialRecipe(),
+            isPrecisionMode: false,
+            brewProfiles: [],
 
-    // Theme initialization
-    theme: getInitialTheme(),
+            theme: getInitialTheme(),
 
-    setBaseDrink: (base) => {
-        const { currentRecipe } = get();
-        const newParams = getDefaultEspressoParams(base);
-        set({
-            currentRecipe: {
-                ...currentRecipe,
-                baseDrink: base,
-                espressoParams: newParams,
-                totalVolume: calculateTotalVolume(newParams, currentRecipe.components)
+            setBaseDrink: (base) => {
+                const { currentRecipe } = get();
+                const newParams = getDefaultEspressoParams(base);
+                set({
+                    currentRecipe: {
+                        ...currentRecipe,
+                        baseDrink: base,
+                        espressoParams: newParams,
+                        totalVolume: calculateTotalVolume(newParams, currentRecipe.components)
+                    }
+                });
+            },
+
+            updateEspressoParams: (updates) => {
+                const { currentRecipe } = get();
+                let newParams = { ...currentRecipe.espressoParams, ...updates };
+
+                if (updates.ratio !== undefined && updates.yield === undefined) {
+                    newParams.yield = updateEspressoYieldFromRatio(newParams.dose, newParams.ratio);
+                }
+
+                set({
+                    currentRecipe: {
+                        ...currentRecipe,
+                        espressoParams: newParams,
+                        totalVolume: calculateTotalVolume(newParams, currentRecipe.components)
+                    }
+                });
+            },
+
+            addComponent: (type) => {
+                const { currentRecipe } = get();
+                const newComponent: DrinkComponent = {
+                    id: generateId(),
+                    type,
+                    volume: type === 'syrup' ? 20 : 150,
+                    name: type,
+                    temperature: 60,
+                };
+
+                const newComponents = [...currentRecipe.components, newComponent];
+
+                set({
+                    currentRecipe: {
+                        ...currentRecipe,
+                        components: newComponents,
+                        totalVolume: calculateTotalVolume(currentRecipe.espressoParams, newComponents)
+                    }
+                });
+            },
+
+            updateComponent: (id, updates) => {
+                const { currentRecipe } = get();
+                const newComponents = currentRecipe.components.map(c =>
+                    c.id === id ? { ...c, ...updates } : c
+                );
+
+                set({
+                    currentRecipe: {
+                        ...currentRecipe,
+                        components: newComponents,
+                        totalVolume: calculateTotalVolume(currentRecipe.espressoParams, newComponents)
+                    }
+                });
+            },
+
+            removeComponent: (id) => {
+                const { currentRecipe } = get();
+                const newComponents = currentRecipe.components.filter(c => c.id !== id);
+                set({
+                    currentRecipe: {
+                        ...currentRecipe,
+                        components: newComponents,
+                        totalVolume: calculateTotalVolume(currentRecipe.espressoParams, newComponents)
+                    }
+                });
+            },
+
+            togglePrecisionMode: () => set(state => ({ isPrecisionMode: !state.isPrecisionMode })),
+
+            addBrewProfile: async (profile) => {
+                const { user } = get();
+                const newProfile: BrewProfile = {
+                    ...profile,
+                    id: generateId(),
+                    lastUpdated: new Date().toISOString(),
+                };
+
+                if (user) {
+                    const { error } = await supabase.from('brew_profiles').insert({
+                        id: newProfile.id,
+                        user_id: user.id,
+                        bean_name: newProfile.beanName,
+                        roast_date: newProfile.roastDate,
+                        grind_setting: newProfile.grindSetting,
+                        dose: newProfile.dose,
+                        expected_yield: newProfile.expectedYield,
+                        expected_time: newProfile.expectedTime,
+                        notes: newProfile.notes
+                    });
+                    if (error) console.error('Error saving to cloud:', error);
+                }
+
+                set(state => ({ brewProfiles: [newProfile, ...state.brewProfiles] }));
+            },
+
+            updateBrewProfile: async (id, updates) => {
+                const { user } = get();
+                const lastUpdated = new Date().toISOString();
+
+                if (user) {
+                    const dbUpdates: any = { last_updated: lastUpdated };
+                    if (updates.beanName) dbUpdates.bean_name = updates.beanName;
+                    if (updates.roastDate) dbUpdates.roast_date = updates.roastDate;
+                    if (updates.grindSetting) dbUpdates.grind_setting = updates.grindSetting;
+                    if (updates.dose) dbUpdates.dose = updates.dose;
+                    if (updates.expectedYield) dbUpdates.expected_yield = updates.expectedYield;
+                    if (updates.expectedTime) dbUpdates.expected_time = updates.expectedTime;
+                    if (updates.notes) dbUpdates.notes = updates.notes;
+
+                    const { error } = await supabase
+                        .from('brew_profiles')
+                        .update(dbUpdates)
+                        .eq('id', id);
+                    if (error) console.error('Error updating cloud:', error);
+                }
+
+                set(state => ({
+                    brewProfiles: state.brewProfiles.map(p =>
+                        p.id === id ? { ...p, ...updates, lastUpdated } : p
+                    )
+                }));
+            },
+
+            removeBrewProfile: async (id) => {
+                const { user } = get();
+                if (user) {
+                    const { error } = await supabase
+                        .from('brew_profiles')
+                        .delete()
+                        .eq('id', id);
+                    if (error) console.error('Error deleting from cloud:', error);
+                }
+                set(state => ({ brewProfiles: state.brewProfiles.filter(p => p.id !== id) }));
+            },
+
+            loadPreset: (name) => {
+                const preset = PRESETS[name];
+                if (preset) {
+                    set({ currentRecipe: { ...preset, id: generateId() } });
+                }
+            },
+
+            loadRecipe: (recipe) => {
+                set({ currentRecipe: { ...recipe, id: generateId() } });
+            },
+
+            resetToEspresso: () => {
+                set({ currentRecipe: { ...PRESETS['Espresso'], id: generateId() } });
+            },
+
+            toggleTheme: () => {
+                const { theme } = get();
+                const newTheme = theme === 'dark' ? 'light' : 'dark';
+                const root = window.document.documentElement;
+                root.classList.remove('light', 'dark');
+                root.classList.add(newTheme);
+                localStorage.setItem('theme-preference', newTheme);
+                set({ theme: newTheme });
+            },
+
+            user: null,
+            session: null,
+            setAuth: (user, session) => set({ user, session }),
+
+            fetchProfiles: async () => {
+                const { user } = get();
+                if (!user) return;
+
+                const { data, error } = await supabase
+                    .from('brew_profiles')
+                    .select('*')
+                    .order('last_updated', { ascending: false });
+
+                if (error) {
+                    console.error('Error fetching profiles:', error);
+                    return;
+                }
+
+                if (data) {
+                    const profiles: BrewProfile[] = data.map(row => ({
+                        id: row.id,
+                        beanName: row.bean_name,
+                        roastDate: row.roast_date,
+                        grindSetting: row.grind_setting,
+                        dose: parseFloat(row.dose),
+                        expectedYield: parseFloat(row.expected_yield),
+                        expectedTime: row.expected_time,
+                        notes: row.notes,
+                        lastUpdated: row.last_updated
+                    }));
+                    set({ brewProfiles: profiles });
+                }
+            },
+
+            signOut: async () => {
+                await supabase.auth.signOut();
+                set({ user: null, session: null, brewProfiles: [] });
             }
-        });
-    },
-
-    updateEspressoParams: (updates) => {
-        const { currentRecipe } = get();
-        let newParams = { ...currentRecipe.espressoParams, ...updates };
-
-        if (updates.ratio !== undefined && updates.yield === undefined) {
-            newParams.yield = updateEspressoYieldFromRatio(newParams.dose, newParams.ratio);
+        }),
+        {
+            name: 'coffee-app-storage',
+            partialize: (state) => ({
+                theme: state.theme,
+                brewProfiles: state.brewProfiles,
+                isPrecisionMode: state.isPrecisionMode,
+            }),
         }
-
-        set({
-            currentRecipe: {
-                ...currentRecipe,
-                espressoParams: newParams,
-                totalVolume: calculateTotalVolume(newParams, currentRecipe.components)
-            }
-        });
-    },
-
-    addComponent: (type) => {
-        const { currentRecipe } = get();
-        const newComponent: DrinkComponent = {
-            id: generateId(),
-            type,
-            volume: type === 'syrup' ? 20 : 150,
-            name: type,
-            temperature: 60,
-        };
-
-        const newComponents = [...currentRecipe.components, newComponent];
-
-        set({
-            currentRecipe: {
-                ...currentRecipe,
-                components: newComponents,
-                totalVolume: calculateTotalVolume(currentRecipe.espressoParams, newComponents)
-            }
-        });
-    },
-
-    updateComponent: (id, updates) => {
-        const { currentRecipe } = get();
-        const newComponents = currentRecipe.components.map(c =>
-            c.id === id ? { ...c, ...updates } : c
-        );
-
-        set({
-            currentRecipe: {
-                ...currentRecipe,
-                components: newComponents,
-                totalVolume: calculateTotalVolume(currentRecipe.espressoParams, newComponents)
-            }
-        });
-    },
-
-    removeComponent: (id) => {
-        const { currentRecipe } = get();
-        const newComponents = currentRecipe.components.filter(c => c.id !== id);
-        set({
-            currentRecipe: {
-                ...currentRecipe,
-                components: newComponents,
-                totalVolume: calculateTotalVolume(currentRecipe.espressoParams, newComponents)
-            }
-        });
-    },
-
-    togglePrecisionMode: () => set(state => ({ isPrecisionMode: !state.isPrecisionMode })),
-
-    loadPreset: (name) => {
-        const preset = PRESETS[name];
-        if (preset) {
-            set({ currentRecipe: { ...preset, id: generateId() } });
-        }
-    },
-
-    resetToEspresso: () => {
-        set({ currentRecipe: { ...PRESETS['Espresso'], id: generateId() } });
-    },
-
-    toggleTheme: () => {
-        const { theme } = get();
-        const newTheme = theme === 'dark' ? 'light' : 'dark';
-
-        // Update DOM
-        const root = window.document.documentElement;
-        root.classList.remove('light', 'dark');
-        root.classList.add(newTheme);
-
-        // Persist
-        localStorage.setItem('theme-preference', newTheme);
-
-        set({ theme: newTheme });
-    }
-}));
+    )
+);

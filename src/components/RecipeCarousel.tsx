@@ -5,8 +5,8 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 import { Zap, X } from 'lucide-react';
 
-interface Recipe {
-    id: number;
+interface CarouselRecipe {
+    id: string;
     title: string;
     fullTitle?: string;
     description: string;
@@ -24,11 +24,11 @@ interface Recipe {
 }
 
 interface RecipeCarouselProps {
-    recipes: Recipe[];
+    recipes: CarouselRecipe[];
 }
 
 export default function RecipeCarousel({ recipes }: RecipeCarouselProps) {
-    const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+    const [selectedRecipe, setSelectedRecipe] = useState<CarouselRecipe | null>(null);
 
     return (
         <div className="w-full min-h-[100dvh] bg-background text-foreground flex flex-col justify-center items-center relative overflow-hidden pt-16 pb-[140px] md:pt-24 md:pb-24">
