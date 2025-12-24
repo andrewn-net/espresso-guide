@@ -120,121 +120,137 @@ export default function AnalysisMode() {
 
     if (status === 'complete' && result) {
         return (
-            <div className="w-full min-h-[100dvh] pb-32 pt-6 px-4 md:px-8 max-w-3xl mx-auto space-y-6">
-                <div className="text-center space-y-2">
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                        Analysis Complete
-                    </h1>
+            <div className="relative w-full min-h-[100dvh] bg-background text-foreground overflow-hidden pt-16 pb-[140px]">
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background: 'radial-gradient(circle at center, hsl(var(--background) / 0.12), hsl(var(--background) / 0.92) 55%, hsl(var(--background)))'
+                    }}
+                />
+
+                <div className="relative z-10 w-full max-w-3xl mx-auto px-4 md:px-8 space-y-6">
+                    <div className="text-center space-y-2">
+                        <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                            Analysis Complete
+                        </h1>
+                    </div>
+                    <AnalysisResults result={result} />
+                    <button
+                        onClick={handleReset}
+                        className="w-full py-3 bg-secondary/60 text-foreground rounded-xl font-medium hover:bg-secondary transition-colors shadow-[0_12px_30px_-24px_hsl(var(--foreground)/0.35)]"
+                    >
+                        Analyze Another Shot
+                    </button>
                 </div>
-                <AnalysisResults result={result} />
-                <button
-                    onClick={handleReset}
-                    className="w-full py-3 bg-secondary/50 text-foreground rounded-xl font-medium hover:bg-secondary transition-colors"
-                >
-                    Analyze Another Shot
-                </button>
             </div>
         );
     }
 
     return (
-        <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center p-6 max-w-md mx-auto relative">
+        <div className="relative w-full min-h-[100dvh] bg-background text-foreground overflow-hidden pt-16 pb-[140px]">
+            <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    background: 'radial-gradient(circle at center, hsl(var(--background) / 0.12), hsl(var(--background) / 0.92) 55%, hsl(var(--background)))'
+                }}
+            />
 
-            {/* Debug Overlay */}
-            {showDebug && (
-                <div className="fixed top-0 left-0 w-full h-full bg-black/90 text-green-400 font-mono text-xs p-4 overflow-auto z-50 pointer-events-none">
-                    <div className="font-bold border-b border-green-500/50 mb-2 pb-1">DEBUG LOGS (Triple tap title to close)</div>
-                    {debugLogs.map((log, i) => (
-                        <div key={i} className="mb-1 border-b border-white/10 pb-1">{`> ${log}`}</div>
-                    ))}
-                </div>
-            )}
-
-            {/* Main Content */}
-            <div className="w-full space-y-8 flex flex-col items-center z-10 transition-all duration-500">
-
-                {/* Header - Triple Tap for Debug */}
-                <div className="text-center space-y-2" onClick={toggleDebug}>
-                    <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent select-none cursor-pointer">
-                        Visual Analysis
-                    </h1>
-                    <p className="text-muted-foreground text-sm">
-                        Record your extraction flow
-                    </p>
-                </div>
-
-                {/* Primary Action: Camera */}
-                <div className="w-full relative group">
-                    <button
-                        onClick={() => cameraInputRef.current?.click()}
-                        disabled={status === 'analyzing'}
-                        className={`w-full aspect-square max-w-[280px] mx-auto rounded-[3rem] shadow-2xl flex flex-col items-center justify-center gap-4 transition-all duration-300 border-4
-                            ${status === 'analyzing'
-                                ? 'bg-secondary/20 border-secondary/50 cursor-wait'
-                                : 'bg-secondary/40 hover:bg-secondary/60 border-primary/10 hover:border-primary/30 hover:scale-105 hover:shadow-xl cursor-pointer active:scale-95'
-                            }
-                        `}
-                    >
-                        {status === 'analyzing' ? (
-                            <div className="space-y-4 animate-in fade-in zoom-in duration-300">
-                                <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto" />
-                                <span className="block text-lg font-medium text-foreground/80 animate-pulse">Analyzing...</span>
-                            </div>
-                        ) : (
-                            <>
-                                <div className="p-6 bg-primary/10 rounded-full text-primary backdrop-blur-sm shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                    <Video size={48} className="fill-current" />
-                                </div>
-                                <div className="text-center text-foreground space-y-1">
-                                    <span className="block font-bold text-2xl tracking-wide group-hover:text-primary transition-colors">Record Shot</span>
-                                    <span className="block text-xs font-medium text-muted-foreground uppercase tracking-widest group-hover:text-primary/70 transition-colors">Tap to Start</span>
-                                </div>
-                            </>
-                        )}
-                    </button>
-                </div>
-
-                {/* Secondary: Upload */}
-                {status !== 'analyzing' && (
-                    <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-2 transition-colors px-4 py-2 rounded-full hover:bg-secondary/40"
-                    >
-                        <Upload size={14} />
-                        <span>Or upload existing video</span>
-                    </button>
-                )}
-
-                {/* Hidden Inputs */}
-                <input
-                    type="file"
-                    ref={cameraInputRef}
-                    className="hidden"
-                    accept="video/*"
-                    capture="environment"
-                    onChange={handleFileSelect}
-                />
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept="video/*"
-                    onChange={handleFileSelect}
-                />
-
-                {/* Error Message */}
-                {errorMsg && (
-                    <div className="p-4 bg-rose-500/10 text-rose-500 text-sm rounded-xl text-center border border-rose-500/20 max-w-sm animate-in fade-in slide-in-from-top-2">
-                        {errorMsg}
+            <div className="relative z-10 w-full max-w-md mx-auto px-4 md:px-8 space-y-8 flex flex-col items-center">
+                {/* Debug Overlay */}
+                {showDebug && (
+                    <div className="fixed top-0 left-0 w-full h-full bg-black/90 text-green-400 font-mono text-xs p-4 overflow-auto z-50 pointer-events-none">
+                        <div className="font-bold border-b border-green-500/50 mb-2 pb-1">DEBUG LOGS (Triple tap title to close)</div>
+                        {debugLogs.map((log, i) => (
+                            <div key={i} className="mb-1 border-b border-white/10 pb-1">{`> ${log}`}</div>
+                        ))}
                     </div>
                 )}
 
-                {/* Env Warning */}
-                {!apiKey && (
-                    <div className="text-xs text-rose-500/80 text-center max-w-xs">
-                        Warning: Gemini API Key not found. Analysis will fail.
+                {/* Main Content */}
+                <div className="w-full space-y-8 flex flex-col items-center transition-all duration-500">
+                    {/* Header - Triple Tap for Debug */}
+                    <div className="text-center space-y-2" onClick={toggleDebug}>
+                        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent select-none cursor-pointer">
+                            Visual Analysis
+                        </h1>
+                        <p className="text-muted-foreground text-sm">
+                            Record your extraction flow
+                        </p>
                     </div>
-                )}
+
+                    {/* Primary Action: Camera */}
+                    <div className="w-full relative group">
+                        <button
+                            onClick={() => cameraInputRef.current?.click()}
+                            disabled={status === 'analyzing'}
+                            className={`w-full aspect-square max-w-[280px] mx-auto rounded-[3rem] shadow-[0_22px_60px_-36px_hsl(var(--foreground)/0.45)] flex flex-col items-center justify-center gap-4 transition-all duration-300 border-4
+                                ${status === 'analyzing'
+                                    ? 'bg-secondary/20 border-secondary/50 cursor-wait'
+                                    : 'bg-secondary/40 hover:bg-secondary/55 border-primary/10 hover:border-primary/25 hover:scale-105 hover:shadow-[0_24px_62px_-30px_hsl(var(--foreground)/0.42)] cursor-pointer active:scale-95'
+                                }
+                            `}
+                        >
+                            {status === 'analyzing' ? (
+                                <div className="space-y-4 animate-in fade-in zoom-in duration-300">
+                                    <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto" />
+                                    <span className="block text-lg font-medium text-foreground/80 animate-pulse">Analyzing...</span>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="p-6 bg-primary/10 rounded-full text-primary backdrop-blur-sm shadow-[0_10px_28px_-18px_hsl(var(--foreground)/0.3)] group-hover:scale-110 transition-transform duration-300">
+                                        <Video size={48} className="fill-current" />
+                                    </div>
+                                    <div className="text-center text-foreground space-y-1">
+                                        <span className="block font-bold text-2xl tracking-wide group-hover:text-primary transition-colors">Record Shot</span>
+                                        <span className="block text-xs font-medium text-muted-foreground uppercase tracking-widest group-hover:text-primary/70 transition-colors">Tap to Start</span>
+                                    </div>
+                                </>
+                            )}
+                        </button>
+                    </div>
+
+                    {/* Secondary: Upload */}
+                    {status !== 'analyzing' && (
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-2 transition-colors px-4 py-2 rounded-full hover:bg-secondary/40"
+                        >
+                            <Upload size={14} />
+                            <span>Or upload existing video</span>
+                        </button>
+                    )}
+
+                    {/* Hidden Inputs */}
+                    <input
+                        type="file"
+                        ref={cameraInputRef}
+                        className="hidden"
+                        accept="video/*"
+                        capture="environment"
+                        onChange={handleFileSelect}
+                    />
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="video/*"
+                        onChange={handleFileSelect}
+                    />
+
+                    {/* Error Message */}
+                    {errorMsg && (
+                        <div className="p-4 bg-rose-500/10 text-rose-500 text-sm rounded-xl text-center border border-rose-500/20 max-w-sm animate-in fade-in slide-in-from-top-2">
+                            {errorMsg}
+                        </div>
+                    )}
+
+                    {/* Env Warning */}
+                    {!apiKey && (
+                        <div className="text-xs text-rose-500/80 text-center max-w-xs">
+                            Warning: Gemini API Key not found. Analysis will fail.
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

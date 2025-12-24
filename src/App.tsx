@@ -168,7 +168,7 @@ export default function App() {
 
 
   return (
-    <div className="relative w-full h-[100dvh] bg-background transition-colors duration-500">
+    <div className="relative w-full min-h-[100dvh] bg-background transition-colors duration-500">
       {/* Theme Toggle - Keep in top right */}
       <div className="absolute top-4 right-4 z-50">
         <button
@@ -187,11 +187,11 @@ export default function App() {
 
       {/* Floating Bottom Tab Navigation */}
       <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4">
-        <div className="bg-secondary/90 backdrop-blur-xl rounded-full border border-border/50 shadow-2xl p-1.5 flex gap-1">
+        <div className="bg-secondary/90 backdrop-blur-xl rounded-full border border-border/50 shadow-[0_12px_28px_-18px_hsl(var(--foreground)/0.2)] p-1.5 flex gap-1">
           <button
             onClick={() => setMode('dialin')}
             className={`flex items-center gap-2 px-4 py-3 rounded-full font-semibold transition-all ${mode === 'dialin'
-              ? 'bg-primary text-primary-foreground shadow-lg'
+              ? 'bg-primary text-primary-foreground shadow-[0_8px_18px_-12px_hsl(var(--foreground)/0.22)]'
               : 'text-foreground hover:bg-secondary/50'
               }`}
           >
@@ -202,7 +202,7 @@ export default function App() {
           <button
             onClick={() => setMode('analysis')}
             className={`flex items-center gap-2 px-4 py-3 rounded-full font-semibold transition-all ${mode === 'analysis'
-              ? 'bg-primary text-primary-foreground shadow-lg'
+              ? 'bg-primary text-primary-foreground shadow-[0_8px_18px_-12px_hsl(var(--foreground)/0.22)]'
               : 'text-foreground hover:bg-secondary/50'
               }`}
           >
@@ -213,7 +213,7 @@ export default function App() {
           <button
             onClick={() => setMode('recipe')}
             className={`flex items-center gap-2 px-4 py-3 rounded-full font-semibold transition-all ${mode === 'recipe'
-              ? 'bg-primary text-primary-foreground shadow-lg'
+              ? 'bg-primary text-primary-foreground shadow-[0_8px_18px_-12px_hsl(var(--foreground)/0.22)]'
               : 'text-foreground hover:bg-secondary/50'
               }`}
           >
