@@ -359,7 +359,7 @@ export default function DialInMode() {
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider ml-1">Flavor Notes & Observations</label>
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider ml-1">Flavour Notes & Observations</label>
                                 <textarea
                                     placeholder="Bright acidity, jasmine notes, light body..."
                                     value={saveForm.notes}
@@ -368,7 +368,7 @@ export default function DialInMode() {
                                     className="w-full bg-secondary/50 border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
                                 />
                                 <p className="text-[9px] text-muted-foreground italic px-1">
-                                    Pre-filled with AI expected profile. Edit to match your actual taste.
+                                    Pre-filled with expected profile. Edit to match your actual taste.
                                 </p>
                             </div>
                         </div>

@@ -64,7 +64,7 @@ export const analyzeEspressoShot = (input: DialInInput): DialInRecommendation =>
     if (input.time < TARGET_TIME_MIN) {
         diagnosis = 'under-extracted';
         severityLevel = input.time < 20 ? 'major' : 'minor';
-        explanation = `Your shot pulled too quickly (${input.time}s). Water flowed through the coffee too fast, not extracting enough flavor compounds.`;
+        explanation = `Your shot pulled too quickly (${input.time}s). Water flowed through the coffee too fast, not extracting enough flavour compounds.`;
         tasteProfile = 'Expect sour, acidic notes with thin body and weak crema. Shot may taste watery or tea-like.';
     } else if (input.time > TARGET_TIME_MAX) {
         diagnosis = 'over-extracted';
