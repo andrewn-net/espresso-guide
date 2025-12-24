@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { Coffee, AlertCircle, CheckCircle, TrendingUp, TrendingDown } from 'lucide-react';
+import { Coffee, AlertCircle, CheckCircle, TrendingUp, TrendingDown, BookOpen, X, Save, Calendar } from 'lucide-react';
 import { analyzeEspressoShot } from '@/utils/calculations';
 import type { DialInInput, DialInRecommendation } from '@/types';
 import { useStore } from '@/store/useStore';
-import { BookOpen } from 'lucide-react';
 
 export default function DialInMode() {
     const [input, setInput] = useState<DialInInput>({
@@ -15,6 +14,13 @@ export default function DialInMode() {
     const [recommendation, setRecommendation] = useState<DialInRecommendation | null>(null);
     const { addBrewProfile } = useStore();
     const [isSaved, setIsSaved] = useState(false);
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [saveForm, setSaveForm] = useState({
+        beanName: '',
+        grindSetting: '',
+        roastDate: '',
+        notes: ''
+    });
 
     const handleAnalyze = () => {
         const result = analyzeEspressoShot(input);
@@ -25,6 +31,38 @@ export default function DialInMode() {
     const handleReset = () => {
         setInput({ dose: 18, yield: 36, time: 27 });
         setRecommendation(null);
+        setIsSaved(false);
+    };
+
+    const handleSaveInitiate = () => {
+        if (!recommendation) return;
+        setSaveForm({
+            beanName: '',
+            grindSetting: '',
+            roastDate: new Date().toISOString().split('T')[0],
+            notes: recommendation.tasteProfile || ''
+        });
+        setShowSaveModal(true);
+    };
+
+    const handleConfirmSave = () => {
+        if (!saveForm.beanName || !saveForm.grindSetting) {
+            alert('Please enter Bean Name and Grind Setting');
+            return;
+        }
+
+        addBrewProfile({
+            beanName: saveForm.beanName,
+            roastDate: saveForm.roastDate,
+            grindSetting: saveForm.grindSetting,
+            dose: input.dose,
+            expectedYield: input.yield,
+            expectedTime: input.time,
+            notes: saveForm.notes
+        });
+
+        setIsSaved(true);
+        setShowSaveModal(false);
     };
 
     const getSeverityColor = (level: DialInRecommendation['severityLevel']) => {
@@ -249,25 +287,11 @@ export default function DialInMode() {
                                 {/* Actions */}
                                 <div className="flex gap-2 pt-2">
                                     <button
-                                        onClick={() => {
-                                            const beanName = prompt('Bean Name and Roast Date?', '');
-                                            const grind = prompt('Grind Setting?', '');
-                                            if (beanName && grind) {
-                                                addBrewProfile({
-                                                    beanName,
-                                                    grindSetting: grind,
-                                                    dose: input.dose,
-                                                    expectedYield: input.yield,
-                                                    expectedTime: input.time,
-                                                    notes: recommendation.diagnosis === 'perfect' ? 'Ideal Profile' : recommendation.explanation
-                                                });
-                                                setIsSaved(true);
-                                            }
-                                        }}
+                                        onClick={handleSaveInitiate}
                                         disabled={isSaved}
                                         className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-bold transition-all ${isSaved
                                             ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30'
-                                            : 'bg-primary text-primary-foreground shadow-lg hover:opacity-90'
+                                            : 'bg-primary text-primary-foreground shadow-lg hover:opacity-90 active:scale-95'
                                             }`}
                                     >
                                         <BookOpen size={18} />
@@ -279,6 +303,89 @@ export default function DialInMode() {
                     </div>
                 )}
             </div>
+            {/* Save Profile Modal */}
+            {showSaveModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setShowSaveModal(false)} />
+                    <div className="relative w-full max-w-md bg-card border border-border/50 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="p-6 border-b border-border/50 flex justify-between items-center bg-secondary/30">
+                            <div>
+                                <h3 className="text-xl font-bold">Save Brew Profile</h3>
+                                <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Log this extraction</p>
+                            </div>
+                            <button onClick={() => setShowSaveModal(false)} className="p-2 hover:bg-secondary rounded-full transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-6 space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider ml-1">Bean Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. St. Ali House Blend"
+                                    value={saveForm.beanName}
+                                    onChange={e => setSaveForm({ ...saveForm, beanName: e.target.value })}
+                                    className="w-full bg-secondary/50 border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider ml-1">Grind Setting</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. 2.4"
+                                        value={saveForm.grindSetting}
+                                        onChange={e => setSaveForm({ ...saveForm, grindSetting: e.target.value })}
+                                        className="w-full bg-secondary/50 border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider ml-1">Roast Date</label>
+                                    <div className="relative">
+                                        <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                        <input
+                                            type="date"
+                                            value={saveForm.roastDate}
+                                            onChange={e => setSaveForm({ ...saveForm, roastDate: e.target.value })}
+                                            className="w-full bg-secondary/50 border border-border/50 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider ml-1">Flavor Notes & Observations</label>
+                                <textarea
+                                    placeholder="Bright acidity, jasmine notes, light body..."
+                                    value={saveForm.notes}
+                                    onChange={e => setSaveForm({ ...saveForm, notes: e.target.value })}
+                                    rows={3}
+                                    className="w-full bg-secondary/50 border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
+                                />
+                                <p className="text-[9px] text-muted-foreground italic px-1">
+                                    Pre-filled with AI expected profile. Edit to match your actual taste.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-6 bg-secondary/30 border-t border-border/50">
+                            <button
+                                onClick={handleConfirmSave}
+                                className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2"
+                            >
+                                <Save size={18} />
+                                Confirm & Save to Cloud
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

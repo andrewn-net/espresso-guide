@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 export default function BrewProfilesMode() {
     const { brewProfiles, addBrewProfile, removeBrewProfile, user, signOut } = useStore();
     const [isAdding, setIsAdding] = useState(false);
+    const [profileToDelete, setProfileToDelete] = useState<string | null>(null);
     const [newProfile, setNewProfile] = useState({
         beanName: '',
         roastDate: '',
@@ -260,7 +261,7 @@ export default function BrewProfilesMode() {
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => removeBrewProfile(profile.id)}
+                                        onClick={() => setProfileToDelete(profile.id)}
                                         className="p-2 text-muted-foreground/60 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
                                     >
                                         <Trash2 size={18} />
@@ -316,6 +317,40 @@ export default function BrewProfilesMode() {
                     )}
                 </div>
             </div>
+            {/* Delete Confirmation Modal */}
+            {profileToDelete && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setProfileToDelete(null)} />
+                    <div className="relative w-full max-w-sm bg-card border border-border/50 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="p-6 text-center space-y-4">
+                            <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <Trash2 size={32} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold">Delete Brew Profile?</h3>
+                                <p className="text-sm text-muted-foreground mt-1">This action cannot be undone.</p>
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    onClick={() => setProfileToDelete(null)}
+                                    className="flex-1 py-3 bg-secondary text-foreground rounded-xl font-bold text-sm transition-all hover:bg-secondary/80"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        removeBrewProfile(profileToDelete);
+                                        setProfileToDelete(null);
+                                    }}
+                                    className="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-500/20 hover:bg-red-600 active:scale-95 transition-all"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
