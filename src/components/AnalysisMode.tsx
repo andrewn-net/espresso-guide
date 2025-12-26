@@ -219,6 +219,13 @@ export default function AnalysisMode() {
                         </div>
                     )}
 
+                    {/* Privacy Note */}
+                    <div className="flex flex-col items-center px-8 text-center space-y-1 mt-2">
+                        <p className="text-[10px] text-muted-foreground/40 leading-relaxed font-medium uppercase tracking-wider">
+                            Note: Videos are processed by Google's Gemini models. Content may be used for model training and improvement.
+                        </p>
+                    </div>
+
                     {/* Hidden Inputs */}
                     <input
                         type="file"
