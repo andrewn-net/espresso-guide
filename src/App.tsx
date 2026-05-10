@@ -188,6 +188,9 @@ export default function App() {
 
   return (
     <div className="relative w-full min-h-[100dvh] bg-background transition-colors duration-500 font-sans">
+      <div className="absolute top-4 left-4 z-50 pointer-events-none select-none">
+        <span className="text-lg font-semibold tracking-tight text-foreground">Espresso Guide</span>
+      </div>
       {/* Theme Toggle - Keep in top right */}
       <div className="absolute top-4 right-4 z-50">
         <button

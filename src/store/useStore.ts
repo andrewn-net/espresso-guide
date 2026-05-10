@@ -375,7 +375,7 @@ export const useStore = create<StoreState>()(
             setActiveMode: (mode) => set({ activeMode: mode })
         }),
         {
-            name: 'coffee-app-storage',
+            name: 'espresso-guide-storage',
             partialize: (state) => ({
                 theme: state.theme,
                 hasManualTheme: state.hasManualTheme,
