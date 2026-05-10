@@ -4,21 +4,28 @@ A React app for exploring espresso-based drink recipes, dialing in ratios, savin
 
 ## Screenshots
 
-### Dial-in
-
-![Dial-in — espresso parameters and drink builder](./assets/readme/01%20dial-in.jpg)
-
-### Record shot
-
-![Record shot — video analysis for extraction feedback](./assets/readme/02%20record%20shot.jpg)
-
-### Brew profiles
-
-![Brew profiles — saved presets and optional cloud sync](./assets/readme/03%20brew%20profiles.jpg)
-
-### Recipes
-
-![Recipes — drink carousel and recipes](./assets/readme/04%20recipes.jpg)
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <strong>Dial-in</strong><br />
+      <img src="./assets/readme/01%20dial-in.jpg" alt="Dial-in — espresso parameters and drink builder" width="280" />
+    </td>
+    <td align="center" width="50%">
+      <strong>Record shot</strong><br />
+      <img src="./assets/readme/02%20record%20shot.jpg" alt="Record shot — video analysis for extraction feedback" width="280" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <strong>Brew profiles</strong><br />
+      <img src="./assets/readme/03%20brew%20profiles.jpg" alt="Brew profiles — saved presets and optional cloud sync" width="280" />
+    </td>
+    <td align="center">
+      <strong>Recipes</strong><br />
+      <img src="./assets/readme/04%20recipes.jpg" alt="Recipes — drink carousel and recipes" width="280" />
+    </td>
+  </tr>
+</table>
 
 ## Features
 
