@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# Espresso Guide
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React app for exploring espresso-based drink recipes, dialing in ratios, saving brew profiles, and (optionally) analyzing extraction videos with Google Gemini through a server-side API so your API key stays off the client.
 
-Currently, two official plugins are available:
+## Screenshots
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Dial-in
 
-## React Compiler
+![Dial-in — espresso parameters and drink builder](./assets/readme/01%20dial-in.jpg)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Record shot
 
-## Expanding the ESLint configuration
+![Record shot — video analysis for extraction feedback](./assets/readme/02%20record%20shot.jpg)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Brew profiles
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+![Brew profiles — saved presets and optional cloud sync](./assets/readme/03%20brew%20profiles.jpg)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Recipes
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+![Recipes — drink carousel and recipes](./assets/readme/04%20recipes.jpg)
+
+## Features
+
+- **Recipes** — Browse drink definitions with doses, yields, and steps.
+- **Dial-in** — Adjust espresso parameters and milk components with live totals.
+- **Shot analysis** — Upload a shot video; the client extracts frames and calls a Vercel serverless function that uses the Gemini API.
+- **Brew profiles** — Save presets locally; optional Supabase auth and cloud sync when configured.
+
+## Stack
+
+- React 19, TypeScript, Vite 7
+- Tailwind CSS 4
+- Zustand (state + persistence)
+- Supabase JS client (optional)
+- `@google/generative-ai` on the server (`api/analyze.ts`)
+
+## Prerequisites
+
+- Node.js 20+ recommended
+- npm (or another compatible package manager)
+
+## Setup
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Copy the environment template and fill in what you need:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env.local
 ```
+
+| Variable | Where | Purpose |
+| -------- | ----- | ------- |
+| `VITE_SUPABASE_URL` | Client | Supabase project URL (optional) |
+| `VITE_SUPABASE_ANON_KEY` | Client | Supabase anon/public key (optional) |
+| `GEMINI_API` | **Server only** (Vercel env or `vercel dev`) | Google AI API key for shot analysis |
+
+Without Supabase variables, the app still runs; sync features are disabled. Without `GEMINI_API`, analysis requests fail until the key is set where the `/api/analyze` route runs.
+
+**Do not** use a `VITE_`-prefixed variable for the Gemini key — Vite would embed it in the browser bundle.
+
+## Scripts
+
+| Command | Description |
+| ------- | ----------- |
+| `npm run dev` | Start Vite dev server |
+| `npm run build` | Typecheck and production build |
+| `npm run preview` | Preview the production build |
+| `npm run lint` | ESLint |
+| `npx vitest` | Unit tests (Vitest) |
+
+### Local API routes (shot analysis)
+
+Plain `npm run dev` serves the Vite app; `/api/analyze` is implemented for Vercel. To exercise the full flow locally, use the Vercel CLI with `GEMINI_API` set (e.g. in `.env.local`):
+
+```bash
+npm i -g vercel
+vercel dev
+```
+
+## Deploy (Vercel)
+
+1. Connect the repo and deploy.
+2. Set `GEMINI_API` in the project’s Environment Variables for Production (and Preview if needed).
+3. Optionally set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for client-side Supabase.
+
+## Security notes for maintainers
+
+- No `.env` files are committed (see `.gitignore`).
+- Treat `GEMINI_API` as a secret; rotate it if it was ever exposed.
+- The Supabase **anon** key is designed to be public in the client with Row Level Security enforced in your Supabase project — verify RLS policies before going public.
